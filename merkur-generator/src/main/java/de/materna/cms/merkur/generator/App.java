@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package de.materna.cms.merkur.generator.config;
+package de.materna.cms.merkur.generator;
 
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
+import de.materna.cms.merkur.generator.config.AppConfig;
 
 /**
  * @author andreas
- * 
+ * Startet den Spring {@link ApplicationContext}.
  */
-@Configuration
-@EnableScheduling
-public class AppConfig {
-	
-	// TODO: Klasse registrieren, die periodisch Logs ausgibt
-	
+public final class App {
+	public static void main(String[] args) {
+		@SuppressWarnings({ "unused", "resource" })
+		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+	}
 }
