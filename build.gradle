@@ -1,0 +1,14 @@
+allprojects {
+  group = 'de.materna.cms.merkur'
+  version = '0.1'
+}
+
+subprojects {
+  apply from: 'http://www.tellurianring.com/projects/gradle-plugins/gradle-templates/apply.groovy'
+  apply plugin: 'java'
+  apply plugin: 'eclipse'
+
+  repositories {
+      mavenCentral()
+  }
+}

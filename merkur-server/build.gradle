@@ -1,0 +1,8 @@
+/**
+ * Project merkur-server.
+ * Responsible for providing a websocket endpoint for 
+ * the communication between merkur-client and the message broker.
+ */
+
+apply plugin: 'jetty'
+// TODO: Define dependencies

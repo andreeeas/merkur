@@ -1,0 +1,2 @@
+include 'merkur-generator'
+include 'merkur-server'
