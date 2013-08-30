@@ -23,11 +23,14 @@ import de.materna.cms.merkur.generator.config.AppConfig;
 
 /**
  * @author andreas
- * Startet den Spring {@link ApplicationContext}.
+ * 
+ *         Einstiegspunkt der Applikation. Startet den Spring
+ *         {@link ApplicationContext}.
  */
 public final class App {
 	public static void main(String[] args) {
 		@SuppressWarnings({ "unused", "resource" })
-		ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+		ApplicationContext context = new AnnotationConfigApplicationContext(
+				AppConfig.class);
 	}
 }

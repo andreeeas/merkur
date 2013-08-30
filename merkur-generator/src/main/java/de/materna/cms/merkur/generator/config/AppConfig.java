@@ -16,18 +16,25 @@
 
 package de.materna.cms.merkur.generator.config;
 
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import de.materna.cms.merkur.generator.log.LogGenerator;
 
 /**
  * @author andreas
  * 
+ *         Konfiguration des Spring {@link ApplicationContext}.
  */
 @Configuration
 @EnableScheduling
 public class AppConfig {
-	
-	// TODO: Klasse registrieren, die periodisch Logs ausgibt
-	
+
+	@Bean
+	public LogGenerator logGenerator() {
+		return new LogGenerator();
+	}
+
 }

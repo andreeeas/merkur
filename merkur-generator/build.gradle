@@ -3,4 +3,6 @@
  * Responsible for generating log messages.
  */
 
- // TODO: Define dependencies
+dependencies {
+	runtime("org.springframework.amqp:spring-rabbit:1.2.0.RELEASE")
+}
