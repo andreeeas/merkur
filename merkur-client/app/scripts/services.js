@@ -21,6 +21,6 @@ merkurClientAppServices.value('messages.maxEntriesShown', 10);
 
 // topic of messages fetched from stomp client
 // TODO : Über GUI konfigurierbar machen
-merkurClientAppServices. value('messages.topic', '/topic/price.stock.*');
+merkurClientAppServices. value('messages.topic', '/topic/de.#');
 // merkurClientAppServices. value('messages.topic', '/topic/counter');
 // merkurClientAppServices. value('messages.topic', '/topic/uuid');
