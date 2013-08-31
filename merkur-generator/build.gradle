@@ -3,6 +3,10 @@
  * Responsible for generating log messages.
  */
 
+apply plugin: "application"
+ 
+mainClassName = "de.materna.cms.merkur.generator.App"
+
 dependencies {
 	runtime("org.springframework.amqp:spring-rabbit:1.2.0.RELEASE")
 }
