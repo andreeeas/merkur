@@ -68,7 +68,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 		SimpleUrlHandlerMapping hm = new SimpleUrlHandlerMapping();
 		hm.setOrder(-1);
-		hm.setUrlMap(Collections.singletonMap("/merkur-server/**",
+		hm.setUrlMap(Collections.singletonMap("/socket/**",
 				requestHandler));
 		return hm;
 	}

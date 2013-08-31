@@ -14,7 +14,7 @@ merkurClientAppServices.service('stompService', ['messages.serverWebsocketEndpoi
 }]);
 
 // endpoint address for websocket server
-merkurClientAppServices.value('messages.serverWebsocketEndpoint', 'http://localhost:8080/spring-websocket-portfolio/portfolioo');
+merkurClientAppServices.value('messages.serverWebsocketEndpoint', 'http://localhost:8080/merkur-server/socket');
 
 // number of maximum entries shown
 merkurClientAppServices.value('messages.maxEntriesShown', 10);
