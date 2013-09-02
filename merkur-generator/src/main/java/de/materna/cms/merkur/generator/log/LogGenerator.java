@@ -16,11 +16,11 @@
 
 package de.materna.cms.merkur.generator.log;
 
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 
 /**
@@ -28,17 +28,18 @@ import org.springframework.scheduling.annotation.Scheduled;
  * 
  *         Einfache Klasse zur Generierung von Log-Nachrichten.
  * 
- *         Sie dient als rudimentäre Applikation zum Testen der Log4J-Anbindung
+ *         Sie dient als rudimentaere Applikation zum Testen der Log4J-Anbindung
  *         an den Message-Broker(RabbitMQ).
  */
 public final class LogGenerator {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
-	private UUID uuid = UUID.randomUUID();
+	
+	@Value("#{systemProperties['uuid']}")
+	private String uuid;
+	
 	private AtomicInteger count = new AtomicInteger();
 
-	// TODO: UUID und delay über System-Properties (-D) angeben(Stichwort:
-	// fixedDelayString und @Value)
 	@Scheduled(fixedDelay = 1000)
 	public void generateLogs() {
 		log.debug("[uuid: " + uuid + ",number: " + count.incrementAndGet()
