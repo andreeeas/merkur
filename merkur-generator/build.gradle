@@ -1,12 +1,14 @@
 /**
- * Project merkur-generator.
- * Responsible for generating log messages.
+ * Projekt merkur-generator.
+ * Verantwortlich für die Generierung von Log-Nachrichten.
  */
 
-apply plugin: "application"
+apply plugin: 'application'
  
-mainClassName = "de.materna.cms.merkur.generator.App"
+mainClassName = 'de.materna.cms.merkur.generator.App'
+
+ext.springRabbitVersion = '1.2.0.RELEASE'
 
 dependencies {
-	runtime("org.springframework.amqp:spring-rabbit:1.2.0.RELEASE")
+  runtime("org.springframework.amqp:spring-rabbit:$springRabbitVersion")
 }
