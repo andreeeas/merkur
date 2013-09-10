@@ -24,9 +24,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import de.materna.cms.merkur.generator.log.LogGenerator;
 
 /**
- * @author andreas
+ * Konfiguration des Spring {@link ApplicationContext}.
  * 
- *         Konfiguration des Spring {@link ApplicationContext}.
+ * @author andreas
  */
 @Configuration
 @EnableScheduling

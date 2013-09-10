@@ -22,10 +22,9 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import de.materna.cms.merkur.generator.config.AppConfig;
 
 /**
- * @author andreas
+ * Einstiegspunkt der Applikation. Startet den Spring {@link ApplicationContext}
  * 
- *         Einstiegspunkt der Applikation. Startet den Spring
- *         {@link ApplicationContext}.
+ * @author andreas
  */
 public final class App {
 	public static void main(String[] args) {

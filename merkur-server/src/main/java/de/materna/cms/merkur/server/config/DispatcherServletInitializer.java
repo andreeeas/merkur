@@ -24,11 +24,9 @@ import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
+ * Registrierung und Initialisierung des Spring {@link DispatcherServlet}.
+ * 
  * @author andreas
- * 
- *         Registrierung und Initialisierung des Spring
- *         {@link DispatcherServlet}.
- * 
  * @see AbstractAnnotationConfigDispatcherServletInitializer
  */
 public class DispatcherServletInitializer extends
