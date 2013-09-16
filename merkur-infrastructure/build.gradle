@@ -3,51 +3,106 @@
  * Verantwortlich für die Installation der Infrastruktur.
  */
 
-import de.materna.cms.merkur.Download 
+import de.materna.cms.merkur.Download
 
 apply plugin: 'base'
 
 /**
  * Installations-Tasks Unix
  */
-def fileName = 'rabbitmq-server-generic-unix-3.1.5.tar.gz'
 
-task installRabbitmqUnix(type:Copy,dependsOn:['downloadRabbitmqUnix','installErlangUnix']) {
-  description = 'RabbitMQ unter Unix installieren'
-  from tarTree(resources.gzip("$buildDir/download/$fileName"))
-  into file("$buildDir/extract/rabbitmq")
+/* RabbitMQ */
+
+def rabbitMQFileName = 'rabbitmq-server-generic-unix-3.1.5.tar.gz'
+
+task installRabbitmqUnix(type:Copy,group:'Installation',dependsOn:[
+	'downloadRabbitmqUnix',
+	'installErlangUnix'
+]) {
+	description = 'RabbitMQ unter Unix installieren'
+	from tarTree(resources.gzip("$buildDir/download/$rabbitMQFileName"))
+	into file("$buildDir/extract/rabbitmq")
 }
 
-task downloadRabbitmqUnix(type:Download,dependsOn:'initInfrastructureDirectories') {
-  description  = 'RabbitMQ unter Unix herunterladen'
-  sourceUrl    = "http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/$fileName"
-  target       = file("$buildDir/download/$fileName")
-}
+/* MongoDB */
 
-task initInfrastructureDirectories << {
-  def downloadDir = new File("$buildDir/download")
-  def extractDir = new File("$buildDir/extract/rabbitmq")
-  if(!downloadDir.isDirectory()) {
-	downloadDir.mkdirs();
-  }
-  if(!extractDir.isDirectory()) {
-	extractDir.mkdirs();
-  }
-}
+def mongoDBFileName = 'mongodb-linux-x86_64-2.4.6.tgz'
 
-task installErlangUnix(type:Exec) {
-  commandLine = ['sudo', 'zypper', 'in', 'erlang']
+task installMongodbUnix(type:Copy,group:'Installation',dependsOn:['downloadMongodbUnix']) {
+	description = 'MongoDB unter Unix installieren'
+	from tarTree(resources.gzip("$buildDir/download/$mongoDBFileName"))
+	into file("$buildDir/extract/mongodb")
 }
 
 /**
  * Installations-Tasks OSX
  */
-task installRabbitmqOSX(type:Exec,dependsOn:'installHomebrewOSX') {
-  description = 'RabbitMQ unter OSX installieren'
-  commandLine = ['brew', 'install', 'rabbitmq']
+
+/* RabbitMQ */
+
+task installRabbitmqOSX(type:Exec,group:'Installation',dependsOn:'installHomebrewOSX') {
+	description = 'RabbitMQ unter OSX installieren'
+	commandLine = [
+		'brew',
+		'install',
+		'rabbitmq'
+	]
+}
+
+/* MongoDB */
+
+task installMongodbOSX(type:Exec,group:'Installation',dependsOn:'installHomebrewOSX') {
+	description = 'MongoDB unter OSX installieren'
+	commandLine = [
+		'brew',
+		'install',
+		'mongodb'
+	]
+}
+
+/* Hilfs-Tasks */
+
+task downloadRabbitmqUnix(type:Download,dependsOn:'initInfrastructureDirectories') {
+	description  = 'RabbitMQ unter Unix herunterladen'
+	sourceUrl    = "http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/$rabbitMQFileName"
+	target       = file("$buildDir/download/$rabbitMQFileName")
+}
+
+task downloadMongodbUnix(type:Download,dependsOn:'initInfrastructureDirectories') {
+	description  = 'MongoDB unter Unix herunterladen'
+	sourceUrl    = "http://fastdl.mongodb.org/linux/$mongoDBFileName"
+	target       = file("$buildDir/download/$mongoDBFileName")
+}
+
+task initInfrastructureDirectories << {
+	def downloadDir = new File("$buildDir/download")
+	def rabbitMQExtractDir = new File("$buildDir/extract/rabbitmq")
+	def mongoDBExtractDir = new File("$buildDir/extract/mongodb")
+	if(!downloadDir.isDirectory()) {
+		downloadDir.mkdirs();
+	}
+	if(!rabbitMQExtractDir.isDirectory()) {
+		rabbitMQExtractDir.mkdirs();
+	}
+	if(!mongoDBExtractDir.isDirectory()) {
+		mongoDBExtractDir.mkdirs();
+	}
+}
+
+task installErlangUnix(type:Exec) {
+	commandLine = [
+		'sudo',
+		'zypper',
+		'in',
+		'erlang'
+	]
 }
 
 task installHomebrewOSX(type:Exec) {
-  description = 'Homebrew unter OSX installieren'
-  commandLine = ['ruby', '-e', '"$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"']
+	description = 'Homebrew unter OSX installieren'
+	commandLine = [
+		'ruby',
+		'-e',
+		'"$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"'
+	]
 }
