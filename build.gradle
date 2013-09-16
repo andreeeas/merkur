@@ -40,13 +40,13 @@ subprojects {
  */
 def fileName = 'rabbitmq-server-generic-unix-3.1.5.tar.gz'
 
-task installRabbitMQ_Unix(type:Copy,dependsOn:['downloadRabbitMQ_Unix','installErlang_Unix']) {
+task installRabbitmqUnix(type:Copy,dependsOn:['downloadRabbitmqUnix','installErlangUnix']) {
   description = 'RabbitMQ unter Unix installieren'
   from tarTree(resources.gzip("$buildDir/download/$fileName"))
   into file("$buildDir/extract/rabbitmq")
 }
 
-task downloadRabbitMQ_Unix(type:Download,dependsOn:'initInfrastructureDirectories') {
+task downloadRabbitmqUnix(type:Download,dependsOn:'initInfrastructureDirectories') {
   description  = 'RabbitMQ unter Unix herunterladen'
   sourceUrl    = "http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/$fileName"
   target       = file("$buildDir/download/$fileName")   	
@@ -63,19 +63,19 @@ task initInfrastructureDirectories << {
   }
 }
 
-task installErlang_Unix(type:Exec) {
+task installErlangUnix(type:Exec) {
   commandLine = ['sudo', 'zypper', 'in', 'erlang'] 
 }
 
 /**
  * Installations-Tasks OSX
  */
-task installRabbitMQ_OSX(type:Exec,dependsOn:'installHomebrew_OSX') {
+task installRabbitmqOSX(type:Exec,dependsOn:'installHomebrewOSX') {
   description = 'RabbitMQ unter OSX installieren'
   commandLine = ['brew', 'install', 'rabbitmq']
 }
 
-task installHomebrew_OSX(type:Exec) {
+task installHomebrewOSX(type:Exec) {
   description = 'Homebrew unter OSX installieren'
   commandLine = ['ruby', '-e', '"$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"']
 }
