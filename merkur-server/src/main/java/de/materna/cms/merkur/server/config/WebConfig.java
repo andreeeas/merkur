@@ -47,9 +47,9 @@ import org.springframework.web.socket.sockjs.support.DefaultSockJsService;
 import org.springframework.web.socket.sockjs.support.SockJsHttpRequestHandler;
 
 /**
- * @author andreas
+ * Konfiguration des Spring {@link WebApplicationContext}.
  * 
- *         Konfiguration des Spring {@link WebApplicationContext}.
+ * @author andreas
  */
 @Configuration
 @EnableWebMvc
@@ -68,8 +68,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 		SimpleUrlHandlerMapping hm = new SimpleUrlHandlerMapping();
 		hm.setOrder(-1);
-		hm.setUrlMap(Collections.singletonMap("/socket/**",
-				requestHandler));
+		hm.setUrlMap(Collections.singletonMap("/socket/**", requestHandler));
 		return hm;
 	}
 
@@ -87,7 +86,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	// MessageHandler, der Nachrichten an solche Methoden delegiert, die sich in
 	// einer @Controller annotierten Klasse befinden
 
-	// TODO : Spaeter vermutlich entfernen, falls alle Nachrichten direkt an den Message-Broker gehen sollen
+	// TODO : Spaeter vermutlich entfernen, falls alle Nachrichten direkt an den
+	// Message-Broker gehen sollen
 	@Bean
 	public AnnotationMethodMessageHandler annotationMessageHandler() {
 
@@ -179,7 +179,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		return executor;
 	}
 
-	// Task executor, der von SockJS genutzt wird (heartbeat frames, session timeouts)
+	// Task executor, der von SockJS genutzt wird (heartbeat frames, session
+	// timeouts)
 
 	@Bean
 	public ThreadPoolTaskScheduler taskScheduler() {
