@@ -1,2 +1,3 @@
 include 'merkur-generator'
 include 'merkur-server'
+include 'merkur-infrastructure'

@@ -1,11 +1,9 @@
-import org.gradle.api.tasks.OutputFile;
-
 allprojects {
   group   = 'de.materna.cms.merkur'
   version = '0.1'
 }
 
-subprojects {
+configure(subprojects.findAll {it.name != 'merkur-infrastructure'}) {
   apply from: 'http://www.tellurianring.com/projects/gradle-plugins/gradle-templates/apply.groovy'
   apply plugin: 'java'
   apply plugin: 'eclipse'
@@ -32,66 +30,5 @@ subprojects {
     maven {
       url 'http://repo.springsource.org/libs-milestone'
     }
-  }
-}
-
-/**
- * Installations-Tasks Unix
- */
-def fileName = 'rabbitmq-server-generic-unix-3.1.5.tar.gz'
-
-task installRabbitmqUnix(type:Copy,dependsOn:['downloadRabbitmqUnix','installErlangUnix']) {
-  description = 'RabbitMQ unter Unix installieren'
-  from tarTree(resources.gzip("$buildDir/download/$fileName"))
-  into file("$buildDir/extract/rabbitmq")
-}
-
-task downloadRabbitmqUnix(type:Download,dependsOn:'initInfrastructureDirectories') {
-  description  = 'RabbitMQ unter Unix herunterladen'
-  sourceUrl    = "http://www.rabbitmq.com/releases/rabbitmq-server/v3.1.5/$fileName"
-  target       = file("$buildDir/download/$fileName")   	
-}
-
-task initInfrastructureDirectories << {
-  def downloadDir = new File("$buildDir/download")
-  def extractDir = new File("$buildDir/extract/rabbitmq")
-  if(!downloadDir.isDirectory()) {
-    downloadDir.mkdirs();
-  }
-  if(!extractDir.isDirectory()) {
-    extractDir.mkdirs();
-  }
-}
-
-task installErlangUnix(type:Exec) {
-  commandLine = ['sudo', 'zypper', 'in', 'erlang'] 
-}
-
-/**
- * Installations-Tasks OSX
- */
-task installRabbitmqOSX(type:Exec,dependsOn:'installHomebrewOSX') {
-  description = 'RabbitMQ unter OSX installieren'
-  commandLine = ['brew', 'install', 'rabbitmq']
-}
-
-task installHomebrewOSX(type:Exec) {
-  description = 'Homebrew unter OSX installieren'
-  commandLine = ['ruby', '-e', '"$(curl -fsSL https://raw.github.com/mxcl/homebrew/go)"']
-}
-
-/**
- * Task-Klasse zum Download von Dateien
- */
-class Download extends DefaultTask {
-  @Input
-  String sourceUrl
-
-  @OutputFile
-  File target
-
-  @TaskAction
-  void download() {
-    ant.get(src: sourceUrl, dest: target)
   }
 }
