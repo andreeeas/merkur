@@ -7,8 +7,6 @@ apply plugin: 'application'
  
 mainClassName = 'de.materna.cms.merkur.generator.App'
 
-ext.springRabbitVersion = '1.2.0.RELEASE'
-
 dependencies {
-  runtime("org.springframework.amqp:spring-rabbit:$springRabbitVersion")
+  runtime project(':merkur-logback')
 }

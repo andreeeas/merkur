@@ -1,0 +1,11 @@
+/**
+ * Projekt merkur-logback.
+ * Stellt den AMQP-Logback-Appender zur Verfügung.
+ */
+
+ ext.log4jVersion = '1.2.17'
+ 
+dependencies {
+  compile("org.springframework.amqp:spring-rabbit:$springRabbitVersion")
+  compile("log4j:log4j:$log4jVersion")
+}
