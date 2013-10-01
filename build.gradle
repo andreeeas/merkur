@@ -28,6 +28,7 @@ configure(subprojects.findAll {it.name != 'merkur-infrastructure'}) {
     
     testCompile("junit:junit:$junitVersion")
     testCompile("org.hamcrest:hamcrest-all:$hamcrestVersion")
+    testCompile("org.springframework:spring-test:$springVersion")
   }
   
   configurations {
