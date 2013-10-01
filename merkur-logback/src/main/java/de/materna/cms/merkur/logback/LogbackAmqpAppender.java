@@ -48,7 +48,8 @@ import org.springframework.amqp.rabbit.log4j.AmqpAppender;
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.PatternLayout;
 import ch.qos.logback.classic.spi.ILoggingEvent;
-import ch.qos.logback.classic.spi.LoggingEvent;
+import ch.qos.logback.classic.spi.IThrowableProxy;
+import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
 
@@ -60,8 +61,6 @@ import ch.qos.logback.core.Layout;
  * @author andreas
  */
 public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
-
-	private final AmqpAppender decoratedAmqpAppender = new AmqpAppender();
 
 	/**
 	 * Key name for the application id (if there is one set via the appender
@@ -411,7 +410,7 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 				this.initializing.set(false);
 			}
 		}
-		events.add(new Event(loggingevent, loggingevent.getProperties()));
+		events.add(new Event(loggingevent, loggingevent.getMDCPropertyMap()));
 	}
 
 	/*
@@ -446,12 +445,12 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 						connectionFactory);
 				while (true) {
 					final Event event = events.take();
-					LoggingEvent logEvent = event.getEvent();
+					final ILoggingEvent logEvent = event.getEvent();
 
-					String name = logEvent.getLoggerName();
-					Level level = logEvent.getLevel();
+					final String name = logEvent.getLoggerName();
+					final Level level = logEvent.getLevel();
 
-					MessageProperties amqpProps = new MessageProperties();
+					final MessageProperties amqpProps = new MessageProperties();
 					amqpProps.setContentType(contentType);
 					if (null != contentEncoding) {
 						amqpProps.setContentEncoding(contentEncoding);
@@ -474,34 +473,48 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 					amqpProps.setTimestamp(tstamp.getTime());
 
 					// Copy properties in from MDC
-					@SuppressWarnings("rawtypes")
-					Map props = event.getProperties();
-					@SuppressWarnings("unchecked")
-					Set<Entry<?, ?>> entrySet = props.entrySet();
-					for (Entry<?, ?> entry : entrySet) {
+					Map<String, String> props = event.getProperties();
+					Set<Entry<String, String>> entrySet = props.entrySet();
+					for (Entry<String, String> entry : entrySet) {
 						amqpProps.setHeader(entry.getKey().toString(),
 								entry.getValue());
 					}
-					LocationInfo locInfo = logEvent.getLocationInformation();
-					if (!"?".equals(locInfo.getClassName())) {
-						amqpProps.setHeader(
-								"location",
-								String.format("%s.%s()[%s]",
-										locInfo.getClassName(),
-										locInfo.getMethodName(),
-										locInfo.getLineNumber()));
+
+					// TODO: Weitermachen, MDC-Property-Map als Header
+					// setzen,danach sollte der testAppenderWithProps Test
+					// laufen
+					logEvent.getMDCPropertyMap();
+
+					final StackTraceElement[] callerData = logEvent
+							.getCallerData();
+					if (callerData.length > 0) {
+						StackTraceElement firstCallerData = callerData[0];
+						if (!"?".equals(firstCallerData.getClassName())) {
+							amqpProps.setHeader("location", String.format(
+									"%s.%s()[%s]",
+									firstCallerData.getClassName(),
+									firstCallerData.getMethodName(),
+									firstCallerData.getLineNumber()));
+						}
 					}
 
 					StringBuilder msgBody;
 					String routingKey;
 					synchronized (layoutMutex) {
-						msgBody = new StringBuilder(layout.format(logEvent));
-						routingKey = routingKeyLayout.format(logEvent);
+						msgBody = new StringBuilder(
+								logEvent.getFormattedMessage());
+						if (!routingKeyLayout.isStarted()) {
+							routingKeyLayout.start();
+						}
+
+						routingKey = "LogbackAmqpAppenderTest.Test";
 					}
-					if (null != logEvent.getThrowableInformation()) {
-						ThrowableInformation tinfo = logEvent
-								.getThrowableInformation();
-						for (String line : tinfo.getThrowableStrRep()) {
+					if (null != logEvent.getThrowableProxy()) {
+						IThrowableProxy tproxy = logEvent.getThrowableProxy();
+						msgBody.append(String.format("%s%n",
+								tproxy.getMessage()));
+						for (StackTraceElementProxy line : tproxy
+								.getStackTraceElementProxyArray()) {
 							msgBody.append(String.format("%s%n", line));
 						}
 					}
@@ -509,10 +522,12 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 					// Send a message
 					try {
 						Message message = null;
-						if (AmqpAppender.this.charset != null) {
+						if (LogbackAmqpAppender.this.charset != null) {
 							try {
-								message = new Message(msgBody.toString()
-										.getBytes(AmqpAppender.this.charset),
+								message = new Message(
+										msgBody.toString()
+												.getBytes(
+														LogbackAmqpAppender.this.charset),
 										amqpProps);
 							} catch (UnsupportedEncodingException e) {/*
 																	 * fall back
@@ -542,10 +557,10 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 											(long) (Math.pow(retries,
 													Math.log(retries)) * 1000));
 						} else {
-							errorHandler.error("Could not send log message "
-									+ logEvent.getRenderedMessage() + " after "
-									+ maxSenderRetries + " retries", e,
-									ErrorCode.WRITE_FAILURE, logEvent);
+							final String errorMessage = "Could not send log message "
+									+ logEvent.getFormattedMessage()
+									+ " after " + maxSenderRetries + " retries";
+							addError(errorMessage, e);
 						}
 					} finally {
 						if (null != applicationId) {
@@ -563,24 +578,23 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	 * Small helper class to encapsulate a LoggingEvent, its MDC properties, and
 	 * the number of retries.
 	 */
-	@SuppressWarnings("rawtypes")
 	protected class Event {
-		final LoggingEvent event;
+		final ILoggingEvent event;
 
-		final Map properties;
+		final Map<String, String> properties;
 
 		AtomicInteger retries = new AtomicInteger(0);
 
-		public Event(LoggingEvent event, Map properties) {
+		public Event(ILoggingEvent event, Map<String, String> properties) {
 			this.event = event;
 			this.properties = properties;
 		}
 
-		public LoggingEvent getEvent() {
+		public ILoggingEvent getEvent() {
 			return event;
 		}
 
-		public Map getProperties() {
+		public Map<String, String> getProperties() {
 			return properties;
 		}
 
