@@ -18,6 +18,7 @@ build
 .project
 .metadata
 bin/**
+bin
 tmp/**
 tmp/**/*
 *.tmp
