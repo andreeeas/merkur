@@ -360,7 +360,11 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	/**
-	 * Submit the required number of senders into the pool.
+	 * Startet einen {@link ExecutorService} mit {@link #getSenderPoolSize()}
+	 * asynchronen {@link EventSender}.
+	 * 
+	 * @see Executors#newCachedThreadPool()
+	 * @see EventSender
 	 */
 	protected void startSenders() {
 		senderPool = Executors.newCachedThreadPool();
@@ -370,7 +374,12 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	/**
-	 * Maybe declare the exchange.
+	 * Deklariert den {@link Exchange}, falls {@link #isDeclareExchange()}
+	 * {@code true} ist. Der Typ des {@link Exchange} richtet sich nach der
+	 * Property {@link #getExchangeType()}.
+	 * 
+	 * @see Exchange
+	 * @see RabbitAdmin#declareExchange(Exchange)
 	 */
 	protected void maybeDeclareExchange() {
 		RabbitAdmin admin = new RabbitAdmin(connectionFactory);
@@ -436,7 +445,9 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	/**
-	 * Helper class to actually send LoggingEvents asynchronously.
+	 * Hilfsklasse zur asynchronen Versendung von {@link ILoggingEvent}
+	 * -Instanzen. Instanzen werden durch die Methode {@link #startSenders()}
+	 * bei einem {@link ExecutorService} registriert.
 	 */
 	protected class EventSender implements Runnable {
 		public void run() {
@@ -468,27 +479,23 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 					}
 
 					// Set timestamp
-					Calendar tstamp = Calendar.getInstance();
+					final Calendar tstamp = Calendar.getInstance();
 					tstamp.setTimeInMillis(logEvent.getTimeStamp());
 					amqpProps.setTimestamp(tstamp.getTime());
 
 					// Copy properties in from MDC
-					Map<String, String> props = event.getProperties();
-					Set<Entry<String, String>> entrySet = props.entrySet();
-					for (Entry<String, String> entry : entrySet) {
+					final Map<String, String> props = event.getProperties();
+					final Set<Entry<String, String>> entrySet = props
+							.entrySet();
+					for (final Entry<String, String> entry : entrySet) {
 						amqpProps.setHeader(entry.getKey().toString(),
 								entry.getValue());
 					}
 
-					// TODO: Weitermachen, MDC-Property-Map als Header
-					// setzen,danach sollte der testAppenderWithProps Test
-					// laufen
-					logEvent.getMDCPropertyMap();
-
 					final StackTraceElement[] callerData = logEvent
 							.getCallerData();
 					if (callerData.length > 0) {
-						StackTraceElement firstCallerData = callerData[0];
+						final StackTraceElement firstCallerData = callerData[0];
 						if (!"?".equals(firstCallerData.getClassName())) {
 							amqpProps.setHeader("location", String.format(
 									"%s.%s()[%s]",
@@ -510,10 +517,11 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 						routingKey = "LogbackAmqpAppenderTest.Test";
 					}
 					if (null != logEvent.getThrowableProxy()) {
-						IThrowableProxy tproxy = logEvent.getThrowableProxy();
+						final IThrowableProxy tproxy = logEvent
+								.getThrowableProxy();
 						msgBody.append(String.format("%s%n",
 								tproxy.getMessage()));
-						for (StackTraceElementProxy line : tproxy
+						for (final StackTraceElementProxy line : tproxy
 								.getStackTraceElementProxyArray()) {
 							msgBody.append(String.format("%s%n", line));
 						}
@@ -542,7 +550,7 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 						}
 						rabbitTemplate.send(exchangeName, routingKey, message);
 					} catch (AmqpException e) {
-						int retries = event.incrementRetries();
+						final int retries = event.incrementRetries();
 						if (retries < maxSenderRetries) {
 							// Schedule a retry based on the number of times
 							// I've tried to re-send this
@@ -575,15 +583,13 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	}
 
 	/**
-	 * Small helper class to encapsulate a LoggingEvent, its MDC properties, and
-	 * the number of retries.
+	 * Hilfsklasse zur Kapselung eines {@link ILoggingEvent}, seiner MDC
+	 * Properties und der Anzahl der Sendeversuche.
 	 */
 	protected class Event {
-		final ILoggingEvent event;
-
-		final Map<String, String> properties;
-
-		AtomicInteger retries = new AtomicInteger(0);
+		private final ILoggingEvent event;
+		private final Map<String, String> properties;
+		private final AtomicInteger retries = new AtomicInteger(0);
 
 		public Event(ILoggingEvent event, Map<String, String> properties) {
 			this.event = event;

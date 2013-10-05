@@ -49,12 +49,6 @@ import ch.qos.logback.classic.spi.LoggingEvent;
 /**
  * Integrations-Tests für den {@link LogbackAmqpAppender}.
  * 
- * <p>
- * Testet die folgenden Anwendungsfälle:
- * 
- * <ul>
- * <li>Korrekte
- * 
  * @author andreas
  */
 @RunWith(SpringJUnit4ClassRunner.class)
