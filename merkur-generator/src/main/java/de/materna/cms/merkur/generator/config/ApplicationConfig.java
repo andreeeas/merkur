@@ -16,6 +16,7 @@
 
 package de.materna.cms.merkur.generator.config;
 
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,9 @@ import de.materna.cms.merkur.generator.log.LogGenerator;
  * @author andreas
  */
 @Configuration
+@EnableAutoConfiguration
 @EnableScheduling
-public class AppConfig {
+public class ApplicationConfig {
 
 	@Bean
 	public LogGenerator logGenerator() {

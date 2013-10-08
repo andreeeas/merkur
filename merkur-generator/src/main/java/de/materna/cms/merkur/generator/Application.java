@@ -16,20 +16,20 @@
 
 package de.materna.cms.merkur.generator;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
-import de.materna.cms.merkur.generator.config.AppConfig;
+import de.materna.cms.merkur.generator.config.ApplicationConfig;
 
 /**
  * Einstiegspunkt der Applikation. Startet den Spring {@link ApplicationContext}
+ * über Spring-Boot.
  * 
  * @author andreas
+ * @see SpringApplication#run(Object, String...)
  */
-public final class App {
+public class Application {
 	public static void main(String[] args) {
-		@SuppressWarnings({ "unused", "resource" })
-		ApplicationContext context = new AnnotationConfigApplicationContext(
-				AppConfig.class);
+		SpringApplication.run(ApplicationConfig.class, args);
 	}
 }

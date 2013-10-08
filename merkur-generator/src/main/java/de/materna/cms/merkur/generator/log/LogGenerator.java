@@ -26,17 +26,17 @@ import org.springframework.scheduling.annotation.Scheduled;
 /**
  * Einfache Klasse zur Generierung von Log-Nachrichten.
  * 
- * Sie dient als rudimentaere Applikation zum Testen der Log4J-Anbindung an den
- * Message-Broker(RabbitMQ).
+ * Sie dient als rudimentäre Applikation zum Testen der Log-Anbindung an den
+ * Message-Broker.
  * 
  * @author andreas
  */
-public final class LogGenerator {
+public class LogGenerator {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
-	@Value("#{systemProperties['uuid']}")
-	private String uuid;
+	@Value("${id:LogGenerator}")
+	private String id;
 
 	private AtomicInteger count = new AtomicInteger();
 
@@ -45,8 +45,7 @@ public final class LogGenerator {
 	 */
 	@Scheduled(fixedDelay = 1000)
 	public void generateLogs() {
-		log.debug("[uuid: " + uuid + ",number: " + count.incrementAndGet()
-				+ "]");
+		log.debug("[id: " + id + ",number: " + count.incrementAndGet() + "]");
 	}
 
 }

@@ -4,9 +4,8 @@
  */
 
 apply plugin: 'application'
- 
-mainClassName = 'de.materna.cms.merkur.generator.App'
+apply plugin: 'spring-boot'
 
-dependencies {
-  runtime project(':merkur-logback')
-}
+mainClassName = 'de.materna.cms.merkur.generator.Application'
+
+dependencies { runtime project(':merkur-logback') }
