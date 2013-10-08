@@ -21,7 +21,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -87,8 +86,8 @@ public class LogbackAmqpAppenderIntegrationTests {
 			protected void maybeDeclareExchange() {
 				super.maybeDeclareExchange();
 				if (count.incrementAndGet() < 2) {
-					// ensure we don't try to initialize again while
-					// initializing
+					// Sicherstellen, dass nicht während einer Initialisierung
+					// noch einmal initialisiert wird
 					append(event);
 				}
 			}
@@ -119,7 +118,8 @@ public class LogbackAmqpAppenderIntegrationTests {
 		} catch (RuntimeException e) {
 			assertEquals("foo", e.getMessage());
 		}
-		// ensure we initialize again if the first time failed
+		// Sicherstellen, dass noch einmal initialisiert wird, falls beim ersten
+		// Mal ein Fehler auftritt
 		appender.append(event);
 		assertEquals(2, count.get());
 	}
@@ -199,9 +199,11 @@ public class LogbackAmqpAppenderIntegrationTests {
 		event.setLoggerName("foo");
 		event.setLevel(Level.INFO);
 		event.setMessage("bar");
-		final Map<String, String> map = new HashMap<String, String>();
-		event.setMDCPropertyMap(map);
-		event.setLoggerContextRemoteView(new LoggerContextVO("foo", map, 0));
+		@SuppressWarnings("unchecked")
+		final Map<String, String> copyOfContextMap = MDC.getCopyOfContextMap();
+		event.setMDCPropertyMap(copyOfContextMap);
+		event.setLoggerContextRemoteView(new LoggerContextVO("foo",
+				copyOfContextMap, 0));
 		return event;
 	}
 

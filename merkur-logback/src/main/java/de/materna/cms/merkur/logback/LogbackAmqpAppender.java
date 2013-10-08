@@ -46,12 +46,13 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.log4j.AmqpAppender;
 
 import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.PatternLayout;
+import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
+import encoder.RoutingKeyPatternLayoutEncoder;
 
 /**
  * Logback-Version des {@link AmqpAppender}, deren Implementierung auf dieser <a
@@ -89,18 +90,14 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	private String exchangeType = "topic";
 
 	/**
-	 * Log4J pattern format to use to generate a routing key.
+	 * Pattern format to use to generate a routing key.
 	 */
 	private String routingKeyPattern = "%c.%p";
 
 	/**
-	 * Log4J Layout to use to generate routing key.
+	 * Encoder to use to generate routing key.
 	 */
-	private Layout<ILoggingEvent> routingKeyLayout = new PatternLayout() {
-		{
-			setPattern(routingKeyPattern);
-		}
-	};
+	private PatternLayoutEncoder routingKeyEncoder = encoderForRoutingKeyPattern();
 
 	/**
 	 * Used to synchronize access to pattern layouts.
@@ -274,9 +271,11 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 
 	public void setRoutingKeyPattern(String routingKeyPattern) {
 		this.routingKeyPattern = routingKeyPattern;
-		final PatternLayout patternLayout = new PatternLayout();
-		patternLayout.setPattern(routingKeyPattern);
-		this.routingKeyLayout = patternLayout;
+		this.routingKeyEncoder = encoderForRoutingKeyPattern();
+	}
+
+	public Layout<ILoggingEvent> getRoutingKeyLayout() {
+		return routingKeyEncoder.getLayout();
 	}
 
 	public boolean isDeclareExchange() {
@@ -361,7 +360,7 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 
 	/**
 	 * Startet einen {@link ExecutorService} mit {@link #getSenderPoolSize()}
-	 * asynchronen {@link EventSender}.
+	 * asynchronen {@link EventSender}-Instanzen.
 	 * 
 	 * @see Executors#newCachedThreadPool()
 	 * @see EventSender
@@ -401,6 +400,23 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 		}
 	}
 
+	/**
+	 * Zentrale Methode zur Versendung der Log-Nachrichten an den
+	 * Message-Broker.
+	 * 
+	 * <p>
+	 * Beim initialen Aufruf wird zunächst eine Verbindung mit dem
+	 * Message-Broker aufgebaut. Darüber hinaus wird der {@link Exchange}
+	 * deklariert, sofern er noch nicht existiert.
+	 * 
+	 * <p>
+	 * Ist die Verbindung hergestellt, so wird das empfangene
+	 * {@link ILoggingEvent} zur asynchronen Weiterverarbeitung an den
+	 * {@link #senderPool} geschickt.
+	 * 
+	 * @see EventSender
+	 * @see CachingConnectionFactory
+	 */
 	@Override
 	protected void append(ILoggingEvent loggingevent) {
 		if (null == senderPool && this.initializing.compareAndSet(false, true)) {
@@ -422,8 +438,16 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 		events.add(new Event(loggingevent, loggingevent.getMDCPropertyMap()));
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * Stoppt den Appender. Dies erfolgt in folgenden Schritten:
+	 * 
+	 * <ol>
+	 * <li>Fährt den {@link #senderPool} herunter, der für das Verschicken von
+	 * Log-Nachrichten zuständig ist.
+	 * <li>Schließt die Verbindung zum Message-Broker.
+	 * <li>Stoppt den {@link Timer}, der für die Wiederholungsversuche
+	 * fehlgeschlagener Versendungen verwendet wird.
+	 * </ol>
 	 * 
 	 * @see ch.qos.logback.core.AppenderBase#stop()
 	 */
@@ -440,144 +464,170 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 		super.stop();
 	}
 
-	public boolean requiresLayout() {
-		return true;
-	}
-
 	/**
 	 * Hilfsklasse zur asynchronen Versendung von {@link ILoggingEvent}
 	 * -Instanzen. Instanzen werden durch die Methode {@link #startSenders()}
 	 * bei einem {@link ExecutorService} registriert.
 	 */
 	protected class EventSender implements Runnable {
+
 		public void run() {
 			try {
 				RabbitTemplate rabbitTemplate = new RabbitTemplate(
 						connectionFactory);
 				while (true) {
 					final Event event = events.take();
-					final ILoggingEvent logEvent = event.getEvent();
-
-					final String name = logEvent.getLoggerName();
-					final Level level = logEvent.getLevel();
-
-					final MessageProperties amqpProps = new MessageProperties();
-					amqpProps.setContentType(contentType);
-					if (null != contentEncoding) {
-						amqpProps.setContentEncoding(contentEncoding);
-					}
-					amqpProps.setHeader(CATEGORY_NAME, name);
-					amqpProps.setHeader(CATEGORY_LEVEL, level.toString());
-					if (generateId) {
-						amqpProps.setMessageId(UUID.randomUUID().toString());
-					}
-
-					// Set applicationId, if we're using one
-					if (null != applicationId) {
-						amqpProps.setAppId(applicationId);
-						MDC.put(APPLICATION_ID, applicationId);
-					}
-
-					// Set timestamp
-					final Calendar tstamp = Calendar.getInstance();
-					tstamp.setTimeInMillis(logEvent.getTimeStamp());
-					amqpProps.setTimestamp(tstamp.getTime());
-
-					// Copy properties in from MDC
-					final Map<String, String> props = event.getProperties();
-					final Set<Entry<String, String>> entrySet = props
-							.entrySet();
-					for (final Entry<String, String> entry : entrySet) {
-						amqpProps.setHeader(entry.getKey().toString(),
-								entry.getValue());
-					}
-
-					final StackTraceElement[] callerData = logEvent
-							.getCallerData();
-					if (callerData.length > 0) {
-						final StackTraceElement firstCallerData = callerData[0];
-						if (!"?".equals(firstCallerData.getClassName())) {
-							amqpProps.setHeader("location", String.format(
-									"%s.%s()[%s]",
-									firstCallerData.getClassName(),
-									firstCallerData.getMethodName(),
-									firstCallerData.getLineNumber()));
-						}
-					}
-
-					StringBuilder msgBody;
-					String routingKey;
-					synchronized (layoutMutex) {
-						msgBody = new StringBuilder(
-								logEvent.getFormattedMessage());
-						if (!routingKeyLayout.isStarted()) {
-							routingKeyLayout.start();
-						}
-
-						routingKey = "LogbackAmqpAppenderTest.Test";
-					}
-					if (null != logEvent.getThrowableProxy()) {
-						final IThrowableProxy tproxy = logEvent
-								.getThrowableProxy();
-						msgBody.append(String.format("%s%n",
-								tproxy.getMessage()));
-						for (final StackTraceElementProxy line : tproxy
-								.getStackTraceElementProxyArray()) {
-							msgBody.append(String.format("%s%n", line));
-						}
-					}
-
-					// Send a message
-					try {
-						Message message = null;
-						if (LogbackAmqpAppender.this.charset != null) {
-							try {
-								message = new Message(
-										msgBody.toString()
-												.getBytes(
-														LogbackAmqpAppender.this.charset),
-										amqpProps);
-							} catch (UnsupportedEncodingException e) {/*
-																	 * fall back
-																	 * to
-																	 * default
-																	 */
-							}
-						}
-						if (message == null) {
-							message = new Message(
-									msgBody.toString().getBytes(), amqpProps);
-						}
-						rabbitTemplate.send(exchangeName, routingKey, message);
-					} catch (AmqpException e) {
-						final int retries = event.incrementRetries();
-						if (retries < maxSenderRetries) {
-							// Schedule a retry based on the number of times
-							// I've tried to re-send this
-							retryTimer
-									.schedule(
-											new TimerTask() {
-												@Override
-												public void run() {
-													events.add(event);
-												}
-											},
-											(long) (Math.pow(retries,
-													Math.log(retries)) * 1000));
-						} else {
-							final String errorMessage = "Could not send log message "
-									+ logEvent.getFormattedMessage()
-									+ " after " + maxSenderRetries + " retries";
-							addError(errorMessage, e);
-						}
-					} finally {
-						if (null != applicationId) {
-							MDC.remove(APPLICATION_ID);
-						}
-					}
+					sendEvent(rabbitTemplate, event);
 				}
 			} catch (Throwable t) {
 				throw new RuntimeException(t.getMessage(), t);
+			}
+		}
+
+		/**
+		 * Versendet {@link Event}-Instanzen über ein {@link RabbitTemplate}.
+		 * 
+		 * @param rabbitTemplate
+		 *            {@link RabbitTemplate} zur Versendung von
+		 *            {@link ILoggingEvent}-Instanzen
+		 * @param event
+		 *            {@link Event} zur Kapselung des {@link ILoggingEvent} und
+		 *            der zugrunde liegenden Properties
+		 */
+		private void sendEvent(final RabbitTemplate rabbitTemplate,
+				final Event event) {
+			final ILoggingEvent logEvent = event.getEvent();
+
+			final String name = logEvent.getLoggerName();
+			final Level level = logEvent.getLevel();
+
+			final MessageProperties amqpProps = new MessageProperties();
+
+			// muss vor den addXYZ-Methoden aufgerufen werden, da der MDC
+			// ansonsten noch nicht korrekt zur Verfügung steht
+			prepareMDC(event);
+
+			// MessageProperties initialisieren
+			addBasicHeaders(name, level, amqpProps);
+			addTimestampToHeaders(logEvent, amqpProps);
+			addMDCPropertiesToHeaders(event, amqpProps);
+			addLocationHeaderFromCallerData(logEvent, amqpProps);
+
+			// Nachricht zusammenbauen
+			StringBuilder msgBody;
+			String routingKey;
+			synchronized (layoutMutex) {
+				msgBody = new StringBuilder(logEvent.getFormattedMessage());
+				routingKey = getRoutingKeyLayout().doLayout(logEvent);
+			}
+			if (null != logEvent.getThrowableProxy()) {
+				final IThrowableProxy tproxy = logEvent.getThrowableProxy();
+				msgBody.append(String.format("%s%n", tproxy.getMessage()));
+				for (final StackTraceElementProxy line : tproxy
+						.getStackTraceElementProxyArray()) {
+					msgBody.append(String.format("%s%n", line));
+				}
+			}
+
+			// Nachricht versenden
+			try {
+				Message message = null;
+				if (LogbackAmqpAppender.this.charset != null) {
+					try {
+						message = new Message(msgBody.toString().getBytes(
+								LogbackAmqpAppender.this.charset), amqpProps);
+					} catch (UnsupportedEncodingException e) {
+						message = new Message(msgBody.toString().getBytes(),
+								amqpProps);
+					}
+				}
+				rabbitTemplate.send(exchangeName, routingKey, message);
+			} catch (AmqpException e) {
+				final int retries = event.incrementRetries();
+				if (retries < maxSenderRetries) {
+					// Versuch wiederholen
+					retryTimer.schedule(new TimerTask() {
+						@Override
+						public void run() {
+							events.add(event);
+						}
+					}, (long) (Math.pow(retries, Math.log(retries)) * 1000));
+				} else {
+					final String errorMessage = "Could not send log message "
+							+ logEvent.getFormattedMessage() + " after "
+							+ maxSenderRetries + " retries";
+					addError(errorMessage, e);
+				}
+			} finally {
+				cleanMDC();
+			}
+		}
+
+		private void cleanMDC() {
+			if (null != applicationId) {
+				MDC.remove(APPLICATION_ID);
+			}
+		}
+
+		private void prepareMDC(final Event event) {
+			if (null != applicationId) {
+				MDC.put(APPLICATION_ID, applicationId);
+			}
+
+			@SuppressWarnings("unchecked")
+			final Map<String, String> copyOfMDCPropertyMap = MDC
+					.getCopyOfContextMap();
+			if (null != copyOfMDCPropertyMap) {
+				event.getProperties().putAll(copyOfMDCPropertyMap);
+			}
+		}
+
+		private void addBasicHeaders(final String name, final Level level,
+				final MessageProperties amqpProps) {
+			amqpProps.setContentType(contentType);
+			if (null != contentEncoding) {
+				amqpProps.setContentEncoding(contentEncoding);
+			}
+			amqpProps.setHeader(CATEGORY_NAME, name);
+			amqpProps.setHeader(CATEGORY_LEVEL, level.toString());
+			if (generateId) {
+				amqpProps.setMessageId(UUID.randomUUID().toString());
+			}
+
+			if (null != applicationId) {
+				amqpProps.setAppId(applicationId);
+			}
+		}
+
+		private void addTimestampToHeaders(final ILoggingEvent logEvent,
+				final MessageProperties amqpProps) {
+			final Calendar tstamp = Calendar.getInstance();
+			tstamp.setTimeInMillis(logEvent.getTimeStamp());
+			amqpProps.setTimestamp(tstamp.getTime());
+		}
+
+		private void addMDCPropertiesToHeaders(final Event event,
+				final MessageProperties amqpProps) {
+			final Map<String, String> props = event.getProperties();
+			final Set<Entry<String, String>> entrySet = props.entrySet();
+			for (final Entry<String, String> entry : entrySet) {
+				amqpProps
+						.setHeader(entry.getKey().toString(), entry.getValue());
+
+			}
+		}
+
+		private void addLocationHeaderFromCallerData(
+				final ILoggingEvent logEvent, final MessageProperties amqpProps) {
+			final StackTraceElement[] callerData = logEvent.getCallerData();
+			if (callerData.length > 0) {
+				final StackTraceElement firstCallerData = callerData[0];
+				if (!"?".equals(firstCallerData.getClassName())) {
+					amqpProps.setHeader("location", String.format(
+							"%s.%s()[%s]", firstCallerData.getClassName(),
+							firstCallerData.getMethodName(),
+							firstCallerData.getLineNumber()));
+				}
 			}
 		}
 	}
@@ -607,6 +657,14 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 		public int incrementRetries() {
 			return retries.incrementAndGet();
 		}
+	}
+
+	private PatternLayoutEncoder encoderForRoutingKeyPattern() {
+		final PatternLayoutEncoder patternLayoutEncoder = new RoutingKeyPatternLayoutEncoder();
+		patternLayoutEncoder.setPattern(routingKeyPattern);
+		patternLayoutEncoder.setContext(getContext());
+		patternLayoutEncoder.start();
+		return patternLayoutEncoder;
 	}
 
 }
