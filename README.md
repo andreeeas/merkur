@@ -56,6 +56,12 @@ Der Generator ist eine Applikation, die für die Erzeugung von Log-Nachrichten z
 
 **Aufgabe:** Erzeugung von Log-Nachrichten
 
+### Merkur-Logback
+
+Das Logback-Modul stellt einen Logback-Appender bereit, der es ermöglicht, Log-Nachrichten als Nachrichten an den Message-Broker zur versenden.
+
+**Aufgabe:** Anbindung des Logging-Backends Logback an den Message-Broker 
+
 ### Merkur-Server
 
 Der Server fungiert als Bindeglied zwischen dem Message-Broker und Client. Er stellt einen Websocket-Endpunkt bereit, der den Push-Mechanismus der Log-Nachrichten in Richtung Client ermöglicht.
