@@ -21,7 +21,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
+
+import com.google.common.base.Objects;
+import com.google.common.primitives.Ints;
 
 /**
  * Einfache Klasse zur Generierung von Log-Nachrichten.
@@ -31,21 +33,34 @@ import org.springframework.scheduling.annotation.Scheduled;
  * 
  * @author andreas
  */
-public class LogGenerator {
+public class LogGenerator implements Runnable {
 
 	private final Logger log = LoggerFactory.getLogger(getClass());
 
 	@Value("${id:LogGenerator}")
 	private String id;
 
+	@Value("${delay:1000}")
+	private String delay;
+
+	private final int index;
+
+	public LogGenerator(final int index) {
+		this.index = index;
+	}
+
+	public long taskDelay() {
+		return Objects.firstNonNull(Ints.tryParse(delay), 1000).longValue();
+	}
+
 	private AtomicInteger count = new AtomicInteger();
 
 	/**
 	 * Generiert Logs.
 	 */
-	@Scheduled(fixedDelay = 1000)
-	public void generateLogs() {
-		log.debug("[id: " + id + ",number: " + count.incrementAndGet() + "]");
+	public void run() {
+		log.debug("[id: " + id + "{" + index + "}" + ",number: "
+				+ count.incrementAndGet() + "]");
 	}
 
 }

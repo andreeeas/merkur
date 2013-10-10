@@ -20,7 +20,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 import de.materna.cms.merkur.generator.log.LogGenerator;
 
@@ -32,11 +35,25 @@ import de.materna.cms.merkur.generator.log.LogGenerator;
 @Configuration
 @EnableAutoConfiguration
 @EnableScheduling
-public class ApplicationConfig {
+public class ApplicationConfig implements SchedulingConfigurer {
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see
+	 * org.springframework.scheduling.annotation.SchedulingConfigurer#configureTasks
+	 * (org.springframework.scheduling.config.ScheduledTaskRegistrar)
+	 */
+	@Override
+	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+		taskRegistrar.addFixedDelayTask(logGenerator(), logGenerator()
+				.taskDelay());
+	}
 
 	@Bean
 	public LogGenerator logGenerator() {
-		return new LogGenerator();
+		// TODO: Prototype
+		return new LogGenerator(0);
 	}
 
 }
