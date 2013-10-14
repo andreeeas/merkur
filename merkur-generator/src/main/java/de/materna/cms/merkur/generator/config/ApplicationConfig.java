@@ -16,6 +16,8 @@
 
 package de.materna.cms.merkur.generator.config;
 
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -37,6 +39,9 @@ import de.materna.cms.merkur.generator.log.LogGenerator;
 @EnableScheduling
 public class ApplicationConfig implements SchedulingConfigurer {
 
+	@Value("${count:1}")
+	private int count;
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -46,14 +51,18 @@ public class ApplicationConfig implements SchedulingConfigurer {
 	 */
 	@Override
 	public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
-		taskRegistrar.addFixedDelayTask(logGenerator(), logGenerator()
-				.taskDelay());
+		for (int i = 0; i < count; i++) {
+			final LogGenerator logGenerator = logGenerator();
+			logGenerator.setIndex(i);
+			taskRegistrar.addFixedDelayTask(logGenerator,
+					logGenerator.taskDelay());
+		}
 	}
 
 	@Bean
+	@Scope(BeanDefinition.SCOPE_PROTOTYPE)
 	public LogGenerator logGenerator() {
-		// TODO: Prototype
-		return new LogGenerator(0);
+		return new LogGenerator();
 	}
 
 }
