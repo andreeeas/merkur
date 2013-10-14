@@ -2,15 +2,25 @@
   <h1>Logausgaben</h1>
   <p>Beispielhafte Ausgabe von Lognachrichten</p>
   <div class="row-fluid">
+    <span class="span4">
     <div class="input-prepend">
       <span class="add-on">Filter</span>
-      <input type="text" ng-model="query">
+      <input type="text" ng-model="messagesFilter">
     </div>
-    </p>
+    </span>
+    <span class="span4">
+    <div class="input-prepend">
+      <span class="add-on">Quelle</span>
+      <input type="text" ng-model="messagesSource">
+    </div>
+    </span>
+    <span class="span4">
+      <button class="btn btn-primary" type="button" ng-click="subscribe()">Verbinden</button>
+    </span>
   </div>
   <div class="row-fluid">
     <ul class="unstyled">
-      <li ng-repeat="thing in awesomeThings | limitTo:messagesMaxEntriesShown">{{thing}}</li>
+      <li ng-repeat="logMessage in logMessages | limitTo:messagesMaxEntriesShown">{{logMessage}}</li>
     </ul>
   </div>
 </div>

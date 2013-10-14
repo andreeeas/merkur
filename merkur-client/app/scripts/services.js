@@ -3,24 +3,17 @@
 /**
 * merkurClientApp.services Module
 *
-* Provides services and constants for Merkur-Client
+* Stellt Servcices und Konstanten bereit.
 */
 var merkurClientAppServices = angular.module('merkurClientApp.services', []);
 
-// Stomp service
-merkurClientAppServices.service('stompService', ['messages.serverWebsocketEndpoint', function (messagesServerWebsocketEndpoint) {
-  var socket = new SockJS(messagesServerWebsocketEndpoint);
-  this.client = Stomp.over(socket);
-}]);
+// Defaults für Konfiguration
 
-// endpoint address for websocket server
+// Endpunkt-Adresse für die Kommunikation mit dem Websocket-Server
 merkurClientAppServices.value('messages.serverWebsocketEndpoint', 'http://localhost:9090/merkur-server/socket');
 
-// number of maximum entries shown
+// Anzahl maximal angezeigter Nachrichten
 merkurClientAppServices.value('messages.maxEntriesShown', 10);
 
-// topic of messages fetched from stomp client
-// TODO : Über GUI konfigurierbar machen
-merkurClientAppServices. value('messages.topic', '/topic/Generator.#');
-// merkurClientAppServices. value('messages.topic', '/topic/counter');
-// merkurClientAppServices. value('messages.topic', '/topic/uuid');
+// der Routing-Key der Nachrichten, die über den Websocket-Server beim Message-Broker abonniert werden
+merkurClientAppServices.value('messages.source', '/topic/Generator.de.#');
