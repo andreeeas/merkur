@@ -14,3 +14,4 @@ TODO: Ergänzen
 
 - npm install
 - gem install compass(root)
+- bower install
