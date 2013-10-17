@@ -1,6 +1,13 @@
 'use strict';
 
-angular.module('merkurClientApp', ['merkurClientApp.controllers', 'merkurClientApp.services'])
+angular.module('merkurClientApp',
+  [
+    'ngRoute',
+    'merkurClientApp.controllers',
+    'merkurClientApp.services',
+    'merkurClientApp.directives',
+    'merkurClientApp.constants'
+  ])
   .config(['$routeProvider', function ($routeProvider) {
     $routeProvider
       .when('/', {

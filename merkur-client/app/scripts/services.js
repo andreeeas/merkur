@@ -1,9 +1,9 @@
 'use strict';
 
 /**
-* merkurClientApp.services Module
+* merkurClientApp.services Modul
 *
-* Stellt Servcices und Konstanten bereit.
+* Stellt Servcices bereit.
 */
 var merkurClientAppServices = angular.module('merkurClientApp.services', []);
 
@@ -11,14 +11,3 @@ var merkurClientAppServices = angular.module('merkurClientApp.services', []);
 merkurClientAppServices.factory('_', function() {
   return window._;
 });
-
-// Defaults für Konfiguration
-
-// Endpunkt-Adresse für die Kommunikation mit dem Websocket-Server
-merkurClientAppServices.value('messages.serverWebsocketEndpoint', 'http://localhost:9090/merkur-server/socket');
-
-// Anzahl maximal angezeigter Nachrichten
-merkurClientAppServices.value('messages.maxEntriesShown', 10);
-
-// der Routing-Key der Nachrichten, die über den Websocket-Server beim Message-Broker abonniert werden
-merkurClientAppServices.value('messages.source', 'Generator.de.#');
