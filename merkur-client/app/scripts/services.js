@@ -3,7 +3,7 @@
 /**
 * merkurClientApp.services Modul
 *
-* Stellt Servcices bereit.
+* Stellt Services bereit.
 */
 var merkurClientAppServices = angular.module('merkurClientApp.services', []);
 
