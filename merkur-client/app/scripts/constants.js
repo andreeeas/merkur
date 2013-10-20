@@ -8,7 +8,7 @@
 var merkurClientAppConstants = angular.module('merkurClientApp.constants', []);
 
 // Endpunkt-Adresse für die Kommunikation mit dem Websocket-Server
-merkurClientAppConstants.value('messages.serverWebsocketEndpoint', 'http://localhost:9090/merkur-server/socket');
+merkurClientAppConstants.constant('messages.serverWebsocketEndpoint', 'http://localhost:9090/merkur-server/socket');
 
 // Anzahl maximal angezeigter Nachrichten
-merkurClientAppConstants.value('messages.maxEntriesShown', 10000);
+merkurClientAppConstants.constant('messages.maxEntriesShown', 10000);
