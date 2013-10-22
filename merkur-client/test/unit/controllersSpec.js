@@ -13,17 +13,15 @@ describe('Controllers', function () {
         ctrl;
 
     // Controller initialisieren
-    beforeEach(inject(
-                ['$rootScope','$controller',
-        function ($rootScope, $controller) {
+    beforeEach(inject(['$rootScope','$controller','$window',function ($rootScope, $controller, $window) {
       scope = $rootScope.$new();
       messagesMaxEntriesShown = 10000;
       messagesServerWebsocketEndpoint = 'dummyEndpoint';
       ctrl = $controller('MainCtrl', {
         $scope: scope,
+        '$window': $window,
         'messages.serverWebsocketEndpoint': messagesServerWebsocketEndpoint,
-        'messages.maxEntriesShown': messagesMaxEntriesShown,
-        '_': window._
+        'messages.maxEntriesShown': messagesMaxEntriesShown
       });
     }]));
 

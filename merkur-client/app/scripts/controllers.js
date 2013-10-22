@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('merkurClientApp.controllers', [])
-  .controller('MainCtrl', ['$scope','messages.serverWebsocketEndpoint','messages.maxEntriesShown','_',function ($scope, messagesServerWebsocketEndpoint, messagesMaxEntriesShown, _) {
+  .controller('MainCtrl', ['$scope','$window','messages.serverWebsocketEndpoint','messages.maxEntriesShown',
+    function ($scope, $window, messagesServerWebsocketEndpoint, messagesMaxEntriesShown) {
 
     // scope Variablen
     $scope.messagesSource = '';
@@ -9,6 +10,8 @@ angular.module('merkurClientApp.controllers', [])
     $scope.logSubscriptions = [];
     $scope.messagesFilter = '';
     $scope.messagesMaxEntriesShown = messagesMaxEntriesShown;
+
+    var _ = $window._;
 
     var socket = new SockJS(messagesServerWebsocketEndpoint);
     var client = Stomp.over(socket);
