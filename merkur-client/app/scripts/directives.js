@@ -7,7 +7,7 @@
 */
 var merkurClientAppDirectives = angular.module('merkurClientApp.directives', []);
 
-merkurClientAppDirectives.directive('scrollpane',function($compile)
+merkurClientAppDirectives.directive('scrollpane',['$compile',function($compile)
 {
   return {
     restrict: 'A',
@@ -25,4 +25,4 @@ merkurClientAppDirectives.directive('scrollpane',function($compile)
       });
     }
   };
-});
+}]);
