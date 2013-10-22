@@ -4,7 +4,6 @@ angular.module('merkurClientApp',
   [
     'ngRoute',
     'merkurClientApp.controllers',
-    'merkurClientApp.services',
     'merkurClientApp.directives',
     'merkurClientApp.constants'
   ])
