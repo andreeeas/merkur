@@ -51,7 +51,7 @@
     <!-- Log-Nachrichten -->
     <div scrollpane class="span7">
       <ul class="unstyled">
-        <li ng-repeat="logMessage in logMessages | limitTo:messagesMaxEntriesShown">{{logMessage}}</li>
+        <li ng-repeat="logMessage in logMessages track by $index | limitTo:messagesMaxEntriesShown">{{logMessage}}</li>
       </ul>
     </div>
 
