@@ -52,3 +52,17 @@ body {
   }
 
 }
+
+/* jScrollPane */
+
+.jspDrag
+{
+  background:  #ddd;
+}
+
+.jspTrack .jspActive,
+.jspTrack .jspHover,
+.jspDrag:hover
+{
+  background: #eee;
+}
