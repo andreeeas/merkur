@@ -1,60 +1,73 @@
-<div class="container-fluid">
-  
-  <div class="row-fluid">
+<div class="row-fluid configuration">
 
-    <!-- Konfiguration -->
-    <div class="span4">
+  <!-- Konfiguration -->
+  <div class="span10">
+    <form class="span12 form-inline">
 
-      <h1>Merkur</h1>
-      <ol>
-        <li>Quelle anpassen</li>
-        <li>Log-Nachrichten abonnieren</li>
-        <li>Filter definieren</li>
-      </ol>
+      <!-- Verbinden und Abonnieren -->
+      <div class="row-fluid">
 
-      <h2>Eingaben</h2>
-      <form>
-        <div class="control-group">
-          <label class="control-label" for="messagesFilter">Filter</label>
-          <div class="controls">
-            <input class="span12" type="text" id="messagesFilter" ng-model="messagesFilter">
-          </div>
-        </div>        
+        <!-- Verbinden -->
+        <div ng-show="!connected">
+          <select class="span8" ui-select2 ng-model="websocketEndpoint" data-placeholder="Adresse">
+            <option value=""></option>
+            <option ng-repeat="endpoint in websocketEndpoints" ng-value="endpoint.url">{{endpoint.name}}</option>
+          </select>
+          <button type="button" class="span2 btn btn-primary" ng-click="connect()">Verbinden</button>
+        </div>
       
-        <div class="control-group">
-          <label class="control-label" for="messagesSource">Quelle</label>
-          <div class="controls">
-            <input class="span12" type="text" id="messagesSource" ng-model="messagesSource" placeholder="App-ID.Logger">
-          </div>
+        <!-- Abonnieren -->
+        <div ng-show="connected">
+          <span class="span8">
+            <input class="span12" type="text" placeholder="App-ID.Logger" ng-model="logMessagesSource">
+          </span>
+          <button type="button" class="span2 btn btn-primary" ng-click="subscribe()">Abonnieren</button>
+          <button type="button" class="span1 btn btn-danger" ng-click="disconnect()" tooltip="websocketEndpoint" data-toggle="tooltip">
+            <i class="icon-off"></i>
+          </button>
         </div>
+      </div>
 
-        <div class="control-group">
-          <div class="controls">
-            <button class="btn btn-primary" type="button" ng-click="subscribe()">Abonnieren</button>
-          </div>
-        </div>
-      </form>
+      <!-- Abonnements einsehen und kündigen-->
+      <div class="row-fluid pagination" ng-show="hasLogSubscriptions()">
 
-      <h2>Abonnements</h2>
-      <ul class="abos unstyled" ng-show="hasLogSubscriptions()">
-        <li ng-repeat="logSubscription in logSubscriptions">
-          <a class="btn btn-danger span12" ng-click="unsubscribe(logSubscription)">
-            <i class="icon-trash"></i>
-            {{logSubscription.source}}
-          </a> 
-        </li>
-      </ul> 
-      <p ng-show="!hasLogSubscriptions()">Keine Abonnements</p>
+        <!-- Einsehen -->
+        <select class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
+          <option value=""></option>
+          <option ng-repeat="logSubscription in logSubscriptions" ng-value="logSubscription.id">{{logSubscription.source}}</option>
+        </select>
 
-    </div>
+        <!-- Kündigen -->
+        <button type="button" class="span2 btn btn-warning" ng-click="unsubscribe(selectedLogSubscription)" tooltip="selectedLogSubscription" data-toggle="tooltip">Kündigen</button>
+      </div>
 
-    <!-- Log-Nachrichten -->
-    <div scrollpane class="span7">
-      <ul class="unstyled">
-        <li ng-repeat="logMessage in logMessages track by $index | limitTo:messagesMaxEntriesShown">{{logMessage}}</li>
-      </ul>
-    </div>
+      <!-- Filter -->
+      <div class="row-fluid pagination" ng-show="hasLogSubscriptions()">
+        <input class="span8" type="text" placeholder="Filter" ng-model="filter">
+      </div>
 
+    </form>
   </div>
+
+  <div class="span2">
+    <button type="button" class="span12 btn pull-right" ng-click="displayHelp()">
+      <i class="icon-question-sign"></i> Hilfe
+    </button>
+  </div>
+
+</div>
+
+<!-- Benachrichtigungen -->
+<div class="row-fluid notification">
   
+</div>
+
+
+<!-- Log-Nachrichten -->
+<div class="row-fluid logmessages">
+  <div class="span12" scrollpane>
+    <ul class="unstyled">
+      <li ng-repeat="logMessage in logMessages track by $index | limitTo:maxEntriesShown">{{logMessage.body}}</li>
+    </ul>
+  </div>
 </div>

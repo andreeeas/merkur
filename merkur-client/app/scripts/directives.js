@@ -7,22 +7,35 @@
 */
 var merkurClientAppDirectives = angular.module('merkurClientApp.directives', []);
 
-merkurClientAppDirectives.directive('scrollpane',['$compile',function($compile)
+merkurClientAppDirectives.directive('scrollpane',function()
 {
   return {
     restrict: 'A',
-    link: function(scope , element , attrs) {
+    link: function(scope , element) {
       element.addClass('scroll-pane');
       element.jScrollPane({
-        showArrows:true,
         stickToBottom:true
       });
       var api = element.data('jsp');
       scope.$watch(function(scope) {
         return scope.logMessages.length;
-      },function(newValues, oldValues) {
+      },function() {
         api.reinitialise();
       });
     }
   };
-}]);
+});
+
+merkurClientAppDirectives.directive('tooltip',function()
+{
+  return {
+    restrict: 'A',
+    link: function(scope , element , attrs) {
+      element.tooltip({
+        title: function() {
+          return scope[attrs.tooltip];
+        }
+      });
+    }
+  };
+});

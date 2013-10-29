@@ -1,50 +1,81 @@
 'use strict';
 
 angular.module('merkurClientApp.controllers', [])
-  .controller('MainCtrl', ['$scope','$window','messages.serverWebsocketEndpoint','messages.maxEntriesShown',
-    function ($scope, $window, messagesServerWebsocketEndpoint, messagesMaxEntriesShown) {
+  .controller('MainCtrl', ['$scope','$window','defaultWebsocketEndpoints','defaultMaxEntriesShown','$filter','$timeout','$log',
+    function ($scope,$window,defaultWebsocketEndpoints,defaultMaxEntriesShown,$filter,$timeout,$log) {
+
+    var socket, client, _ = $window._;
 
     // scope Variablen
-    $scope.messagesSource = '';
+    $scope.websocketEndpoint = '';
+    $scope.websocketEndpoints = defaultWebsocketEndpoints;
+    $scope.connected = false;
+    $scope.logMessagesSource = '';
+    $scope.selectedLogSubscription = '';
+    $scope.filter = '';
+
     $scope.logMessages = [];
     $scope.logSubscriptions = [];
-    $scope.messagesFilter = '';
-    $scope.messagesMaxEntriesShown = messagesMaxEntriesShown;
+    
+    $scope.maxEntriesShown = defaultMaxEntriesShown;
 
-    var _ = $window._;
+    var digest = _.throttle(function() {
+      $log.info('Digesting ...');
+      $scope.$digest();
+    }, 1000);
 
-    var socket = new SockJS(messagesServerWebsocketEndpoint);
-    var client = Stomp.over(socket);
-    client.connect('', '', function(frame) {
-      console.log('Connected ' + frame);
-    }, function(error) {
-      console.log('STOMP protocol error ' + error);
-    });
+    // Funktion zur Verbindung zum Websocket-Server
+    $scope.connect = function() {
+      socket = new SockJS($scope.websocketEndpoint);
+      client = Stomp.over(socket);
+      client.connect('', '', function(frame) {
+        $log.info('Verbunden, Frame:\n' + frame);
+        $scope.$apply(function() {
+          $scope.connected = true;
+        });
+      }, function(error) {
+        $log.error('STOMP Fehler: ' + error);
+        $scope.$apply(function() {
+          $scope.connected = false;
+        });
+      });
+    };
+
+    // Funktion zur Trennung der Verbindung mit dem Websocket-Server
+    $scope.disconnect = function() {
+      client.disconnect(function() {
+        $log.info('Disconnected');
+        $scope.connected = false;
+      });
+    };
 
     // Funktion zum Abschließen eines Abonnements
     $scope.subscribe = function () {
       // Abonnieren
-      var logSubscriptionId = client.subscribe('/topic/'+$scope.messagesSource, function(message) {
-        if (message.body.indexOf($scope.messagesFilter) > -1) {
-          $scope.$apply(function () {
-            $scope.logMessages.push(message.body);
-            if ($scope.logMessages.length > messagesMaxEntriesShown) {
-              $scope.logMessages.shift();
-            }
-          });
+      $log.info('Abonniere Quelle "'+$scope.logMessagesSource+'"');
+      var logSubscriptionId = client.subscribe('/topic/'+$scope.logMessagesSource, function(message) {
+        if (message.body.indexOf($scope.filter) > -1) {
+          $scope.logMessages.push(message);
+          if ($scope.logMessages.length > $scope.maxEntriesShown) {
+            $scope.logMessages.shift();
+          }
+          digest();
         }
       });
 
       // Abonnement merken
-      var logSubscription = {'id':logSubscriptionId,'source':$scope.messagesSource};
+      var logSubscription = {'id':logSubscriptionId,'source':$scope.logMessagesSource};
       $scope.logSubscriptions.push(logSubscription);
-      $scope.messagesSource = '';
+      $scope.logMessagesSource = '';
     };
 
     // Funktion zum abmelden eines Abonnements
-    $scope.unsubscribe = function (logSubscription) {
-      client.unsubscribe(logSubscription.id);
-      $scope.logSubscriptions = _.without($scope.logSubscriptions, logSubscription);
+    $scope.unsubscribe = function () {
+      $log.info('Entferne Abonnement mit Id "'+$scope.selectedLogSubscription+'"');
+      client.unsubscribe($scope.selectedLogSubscription);
+      $scope.logSubscriptions = _.reject($scope.logSubscriptions, function(logSubscription) {
+        return logSubscription.id === $scope.selectedLogSubscription;
+      });
     };
 
     // Funktion zur Überprüfung auf vorhandene Abonnements

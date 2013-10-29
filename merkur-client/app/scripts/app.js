@@ -3,6 +3,7 @@
 angular.module('merkurClientApp',
   [
     'ngRoute',
+    'ui.select2',
     'merkurClientApp.controllers',
     'merkurClientApp.directives',
     'merkurClientApp.constants'

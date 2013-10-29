@@ -13,8 +13,9 @@
 
     <!-- build:css({.tmp,app}) styles/main.css -->
     <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="bower_components/jscrollpane/style/jquery.jscrollpane.css" />
-    <link rel="stylesheet" href="bower_components/jscrollpane/themes/lozenge/style/jquery.jscrollpane.lozenge.css" />
+    <link rel="stylesheet" href="bower_components/jscrollpane/style/jquery.jscrollpane.css">
+    <link rel="stylesheet" href="bower_components/jscrollpane/themes/lozenge/style/jquery.jscrollpane.lozenge.css">
+    <link rel="stylesheet" href="bower_components/select2/select2.css">
     <!-- endbuild -->
 </head>
 <body ng-app="merkurClientApp">
@@ -28,7 +29,7 @@
     <![endif]-->
 
     <!-- Add your site or application content here -->
-    <div class="container" ng-view=""></div>
+    <div class="container-fluid" ng-view=""></div>
 
     <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
     <script>
@@ -38,8 +39,8 @@
       s.parentNode.insertBefore(g,s)}(document,'script'));
     </script>
 
-    <script src="bower_components/sockjs/sockjs.min.js"></script>
     <script src="bower_components/jquery/jquery.js"></script>
+    <script src="bower_components/sockjs/sockjs.js"></script>
 
     <!-- build:js scripts/plugins.js -->
     <script src="bower_components/underscore/underscore.js"></script>
@@ -63,6 +64,8 @@
 
     <!-- build:js scripts/modules.js -->
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/select2/select2.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-select2/src/select2.js"></script>
     <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
@@ -72,7 +75,6 @@
     <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers.js"></script>
-    <script src="scripts/services.js"></script>
     <script src="scripts/directives.js"></script>
     <script src="scripts/constants.js"></script>
     <!-- endbuild -->

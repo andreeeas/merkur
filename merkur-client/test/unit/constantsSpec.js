@@ -5,18 +5,21 @@ describe('Constants', function () {
   // Constants-Modul laden
   beforeEach(module('merkurClientApp.constants'));
 
-  describe('messages.serverWebsocketEndpoint', function () {
+  describe('defaultWebsocketEndpoints', function () {
 
-    it('should return the serverWebsocketEndpoint', inject(['messages.serverWebsocketEndpoint',function (serverWebsocketEndpoint) {
-      expect(serverWebsocketEndpoint).toEqual('http://localhost:9090/merkur-server/socket');
+    it('should return the serverWebsocketEndpoint', inject(['defaultWebsocketEndpoints',function (defaultWebsocketEndpoints) {
+      expect(defaultWebsocketEndpoints).toEqual([
+        {name:'Tomcat 7',url:'http://localhost:9090/merkur-server/socket'},
+        {name:'Tomcat 8',url:'http://localhost:8080/merkur-server-0.1/socket'}
+      ]);
     }]));
 
   });
 
-  describe('messages.maxEntriesShown', function () {
+  describe('defaultMaxEntriesShown', function () {
 
-    it('should return the maximum number of shown messages', inject(['messages.maxEntriesShown',function (maxEntriesShown) {
-      expect(maxEntriesShown).toBe(10000);
+    it('should return the maximum number of shown messages', inject(['defaultMaxEntriesShown',function (defaultMaxEntriesShown) {
+      expect(defaultMaxEntriesShown).toBe(50);
     }]));
 
   });
