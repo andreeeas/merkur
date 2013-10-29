@@ -13,7 +13,7 @@ describe('Controllers', function () {
         ctrl;
 
     // Controller initialisieren
-    beforeEach(inject(['$rootScope','$controller','$window',function ($rootScope, $controller, $window, $filter, $timeout, $log) {
+    beforeEach(inject(['$rootScope','$controller','$window',function ($rootScope, $controller, $window) {
       scope = $rootScope.$new();
       defaultMaxEntriesShown = 100;
       defaultWebsocketEndpoints = ['dummyEndpoint'];
@@ -21,10 +21,7 @@ describe('Controllers', function () {
         $scope: scope,
         '$window': $window,
         'defaultWebsocketEndpoints': defaultWebsocketEndpoints,
-        'defaultMaxEntriesShown': defaultMaxEntriesShown,
-        '$filter':$filter,
-        '$timeout':$timeout,
-        '$log':$log
+        'defaultMaxEntriesShown': defaultMaxEntriesShown
       });
     }]));
 
@@ -54,13 +51,18 @@ describe('Controllers', function () {
     });
 
     it('should create an empty list of log messages', function () {
-      expect(scope.logMessages.length).toBeDefined();
+      expect(scope.logMessages).toBeDefined();
       expect(scope.logMessages.length).toBe(0);
     });
 
     it('should create an empty list of log subscriptions', function () {
-      expect(scope.logSubscriptions.length).toBeDefined();
+      expect(scope.logSubscriptions).toBeDefined();
       expect(scope.logSubscriptions.length).toBe(0);
+    });
+
+    it('should create an empty array of notifications', function() {
+      expect(scope.notifications).toBeDefined();
+      expect(scope.notifications.length).toBe(0);
     });
 
     it('should create a max number for log messages initialised with a constant value', function () {

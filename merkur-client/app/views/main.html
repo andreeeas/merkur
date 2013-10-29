@@ -13,7 +13,7 @@
             <option value=""></option>
             <option ng-repeat="endpoint in websocketEndpoints" ng-value="endpoint.url">{{endpoint.name}}</option>
           </select>
-          <button type="button" class="span2 btn btn-primary" ng-click="connect()">Verbinden</button>
+          <button type="button" class="span2 btn btn-primary" ng-click="connect()" ng-disabled="websocketEndpoint === ''">Verbinden</button>
         </div>
       
         <!-- Abonnieren -->
@@ -21,7 +21,7 @@
           <span class="span8">
             <input class="span12" type="text" placeholder="App-ID.Logger" ng-model="logMessagesSource">
           </span>
-          <button type="button" class="span2 btn btn-primary" ng-click="subscribe()">Abonnieren</button>
+          <button type="button" class="span2 btn btn-primary" ng-click="subscribe()" ng-disabled="logMessagesSource === ''">Abonnieren</button>
           <button type="button" class="span1 btn btn-danger" ng-click="disconnect()" tooltip="websocketEndpoint" data-toggle="tooltip">
             <i class="icon-off"></i>
           </button>
@@ -38,7 +38,7 @@
         </select>
 
         <!-- Kündigen -->
-        <button type="button" class="span2 btn btn-warning" ng-click="unsubscribe(selectedLogSubscription)" tooltip="selectedLogSubscription" data-toggle="tooltip">Kündigen</button>
+        <button type="button" class="span2 btn btn-warning" ng-click="unsubscribe(selectedLogSubscription)" tooltip="selectedLogSubscription" data-toggle="tooltip" ng-disabled="selectedLogSubscription === ''">Kündigen</button>
       </div>
 
       <!-- Filter -->
@@ -58,13 +58,15 @@
 </div>
 
 <!-- Benachrichtigungen -->
-<div class="row-fluid notification">
-  
+<div class="row-fluid notifications" ng-show="hasNotifications()">
+  <ul class="unstyled">
+    <li ng-repeat="notification in notifications track by $index | limitTo:3" class="alert" ng-class="notification.level">{{notification.message}}</li>
+  </ul>
 </div>
 
 
 <!-- Log-Nachrichten -->
-<div class="row-fluid logmessages">
+<div class="row-fluid logmessages" ng-show="hasLogMessages()">
   <div class="span12" scrollpane>
     <ul class="unstyled">
       <li ng-repeat="logMessage in logMessages track by $index | limitTo:maxEntriesShown">{{logMessage.body}}</li>

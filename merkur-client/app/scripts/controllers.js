@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('merkurClientApp.controllers', [])
-  .controller('MainCtrl', ['$scope','$window','defaultWebsocketEndpoints','defaultMaxEntriesShown','$filter','$timeout','$log',
-    function ($scope,$window,defaultWebsocketEndpoints,defaultMaxEntriesShown,$filter,$timeout,$log) {
+  .controller('MainCtrl', ['$scope','$window','defaultWebsocketEndpoints','defaultMaxEntriesShown','$timeout',
+    function ($scope,$window,defaultWebsocketEndpoints,defaultMaxEntriesShown,$timeout) {
 
     var socket, client, _ = $window._;
 
@@ -16,11 +16,11 @@ angular.module('merkurClientApp.controllers', [])
 
     $scope.logMessages = [];
     $scope.logSubscriptions = [];
+    $scope.notifications = [];
     
     $scope.maxEntriesShown = defaultMaxEntriesShown;
 
     var digest = _.throttle(function() {
-      $log.info('Digesting ...');
       $scope.$digest();
     }, 1000);
 
@@ -29,12 +29,12 @@ angular.module('merkurClientApp.controllers', [])
       socket = new SockJS($scope.websocketEndpoint);
       client = Stomp.over(socket);
       client.connect('', '', function(frame) {
-        $log.info('Verbunden, Frame:\n' + frame);
+        addNotification('Verbunden mit "'+$scope.websocketEndpoint+'"','success');
         $scope.$apply(function() {
           $scope.connected = true;
         });
       }, function(error) {
-        $log.error('STOMP Fehler: ' + error);
+        addNotification('STOMP Fehler: "'+error+'"','error');
         $scope.$apply(function() {
           $scope.connected = false;
         });
@@ -44,7 +44,10 @@ angular.module('merkurClientApp.controllers', [])
     // Funktion zur Trennung der Verbindung mit dem Websocket-Server
     $scope.disconnect = function() {
       client.disconnect(function() {
-        $log.info('Disconnected');
+        _.each($scope.logSubscriptions, function(logSubscription) {
+          doUnsubsribe(logSubscription.id);
+        });
+        addNotification('Verbindung zu "'+$scope.websocketEndpoint+'" getrennt','warning');
         $scope.connected = false;
       });
     };
@@ -52,7 +55,6 @@ angular.module('merkurClientApp.controllers', [])
     // Funktion zum Abschließen eines Abonnements
     $scope.subscribe = function () {
       // Abonnieren
-      $log.info('Abonniere Quelle "'+$scope.logMessagesSource+'"');
       var logSubscriptionId = client.subscribe('/topic/'+$scope.logMessagesSource, function(message) {
         if (message.body.indexOf($scope.filter) > -1) {
           $scope.logMessages.push(message);
@@ -66,21 +68,47 @@ angular.module('merkurClientApp.controllers', [])
       // Abonnement merken
       var logSubscription = {'id':logSubscriptionId,'source':$scope.logMessagesSource};
       $scope.logSubscriptions.push(logSubscription);
+      addNotification('Quelle "'+$scope.logMessagesSource+'" abonniert','info');
       $scope.logMessagesSource = '';
     };
 
     // Funktion zum abmelden eines Abonnements
     $scope.unsubscribe = function () {
-      $log.info('Entferne Abonnement mit Id "'+$scope.selectedLogSubscription+'"');
-      client.unsubscribe($scope.selectedLogSubscription);
-      $scope.logSubscriptions = _.reject($scope.logSubscriptions, function(logSubscription) {
-        return logSubscription.id === $scope.selectedLogSubscription;
+      doUnsubsribe($scope.selectedLogSubscription);
+    };
+
+    var doUnsubsribe = function(logSubscription) {
+      client.unsubscribe(logSubscription);
+      $scope.logSubscriptions = _.reject($scope.logSubscriptions, function(subscription) {
+        return subscription.id === logSubscription;
       });
+      addNotification('Abonnement mit Id "'+logSubscription+'" entfernt','info');
     };
 
     // Funktion zur Überprüfung auf vorhandene Abonnements
     $scope.hasLogSubscriptions = function () {
       return $scope.logSubscriptions.length > 0;
+    };
+
+    var addNotification = function(message, level) {
+      var notification = {
+        'message':message,
+        'level':'alert-'+level
+      };
+      $scope.notifications.push(notification);
+      $timeout(function() {
+        $scope.notifications = _.without($scope.notifications,notification);
+      }, 5000);
+    };
+
+    // Funktion zur Überprüfung auf vorhandene Benachrichtigungen
+    $scope.hasNotifications = function () {
+      return $scope.notifications.length > 0;
+    };
+
+    // Funktion zur Überprüfung auf vorhandene Log-Nachrichten
+    $scope.hasLogMessages = function () {
+      return $scope.logMessages.length > 0;
     };
 
   }]);
