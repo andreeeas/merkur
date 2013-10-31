@@ -9,11 +9,11 @@
 
         <!-- Verbinden -->
         <div ng-show="!connected">
-          <select class="span8" ui-select2 ng-model="websocketEndpoint" data-placeholder="Adresse">
+          <select id="websocketEndpoint" class="span8" ui-select2 ng-model="websocketEndpoint" data-placeholder="Adresse">
             <option value=""></option>
             <option ng-repeat="endpoint in websocketEndpoints" ng-value="endpoint.url">{{endpoint.name}}</option>
           </select>
-          <button type="button" class="span2 btn btn-primary" ng-click="connect()" ng-disabled="websocketEndpoint === ''">Verbinden</button>
+          <button id="connect" type="button" class="span2 btn btn-primary" ng-click="connect()" ng-disabled="websocketEndpoint === ''">Verbinden</button>
         </div>
       
         <!-- Abonnieren -->
@@ -21,8 +21,8 @@
           <span class="span8">
             <input class="span12" type="text" placeholder="App-ID.Logger" ng-model="logMessagesSource">
           </span>
-          <button type="button" class="span2 btn btn-primary" ng-click="subscribe()" ng-disabled="logMessagesSource === ''">Abonnieren</button>
-          <button type="button" class="span1 btn btn-danger" ng-click="disconnect()" tooltip="websocketEndpoint" data-toggle="tooltip">
+          <button id="subscribe" type="button" class="span2 btn btn-primary" ng-click="subscribe()" ng-disabled="logMessagesSource === ''">Abonnieren</button>
+          <button id="disconnect" type="button" class="span1 btn btn-danger" ng-click="disconnect()" tooltip="websocketEndpoint" data-toggle="tooltip">
             <i class="icon-off"></i>
           </button>
         </div>
