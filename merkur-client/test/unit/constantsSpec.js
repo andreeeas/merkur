@@ -19,7 +19,7 @@ describe('Constants', function () {
   describe('defaultMaxEntriesShown', function () {
 
     it('should return the maximum number of shown messages', inject(['defaultMaxEntriesShown',function (defaultMaxEntriesShown) {
-      expect(defaultMaxEntriesShown).toBe(50);
+      expect(defaultMaxEntriesShown).toBe(200);
     }]));
 
   });
