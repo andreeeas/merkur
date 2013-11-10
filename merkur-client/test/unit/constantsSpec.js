@@ -24,4 +24,12 @@ describe('Constants', function () {
 
   });
 
+  describe('defaultMaxNotificationsShown', function () {
+
+    it('should return the maximum number of shown notifications', inject(['defaultMaxNotificationsShown',function (defaultMaxNotificationsShown) {
+      expect(defaultMaxNotificationsShown).toBe(3);
+    }]));
+
+  });
+
 });

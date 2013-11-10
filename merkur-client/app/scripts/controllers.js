@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('merkurClientApp.controllers', [])
-  .controller('MainCtrl', ['$scope','$window','defaultWebsocketEndpoints','defaultMaxEntriesShown','$timeout',
-    function ($scope,$window,defaultWebsocketEndpoints,defaultMaxEntriesShown,$timeout) {
+  .controller('MainCtrl', ['$scope','$window','defaultWebsocketEndpoints','defaultMaxEntriesShown','defaultMaxNotificationsShown','$timeout',
+    function ($scope,$window,defaultWebsocketEndpoints,defaultMaxEntriesShown,defaultMaxNotificationsShown,$timeout) {
 
     var socket, client, _ = $window._;
 
@@ -19,6 +19,7 @@ angular.module('merkurClientApp.controllers', [])
     $scope.notifications = [];
     
     $scope.maxEntriesShown = defaultMaxEntriesShown;
+    $scope.maxNotificationsShown = defaultMaxNotificationsShown;
 
     var digest = _.throttle(function() {
       $scope.$digest();
@@ -34,7 +35,7 @@ angular.module('merkurClientApp.controllers', [])
           $scope.connected = true;
         });
       }, function(error) {
-        addNotification('STOMP Fehler: "'+error+'"','error');
+        addNotification('Fehler beim Verbinden: "'+error+'"','error');
         $scope.$apply(function() {
           $scope.connected = false;
         });
@@ -96,6 +97,9 @@ angular.module('merkurClientApp.controllers', [])
         'level':'alert-'+level
       };
       $scope.notifications.push(notification);
+      if ($scope.notifications.length > $scope.maxNotificationsShown) {
+        $scope.notifications.shift();
+      }
     };
 
     // Funktion zur Überprüfung auf vorhandene Benachrichtigungen

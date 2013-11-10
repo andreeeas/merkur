@@ -15,3 +15,6 @@ merkurClientAppConstants.constant('defaultWebsocketEndpoints', [
 
 // Anzahl maximal angezeigter Nachrichten
 merkurClientAppConstants.constant('defaultMaxEntriesShown', 200);
+
+// Anzahl maximal angezeigter Benachrichtigungen
+merkurClientAppConstants.constant('defaultMaxNotificationsShown', 3);

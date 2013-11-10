@@ -9,6 +9,7 @@ describe('Controllers', function () {
 
     var scope,
         defaultMaxEntriesShown,
+        defaultMaxNotificationsShown,
         defaultWebsocketEndpoints,
         ctrl;
 
@@ -16,12 +17,14 @@ describe('Controllers', function () {
     beforeEach(inject(['$rootScope','$controller','$window',function ($rootScope, $controller, $window) {
       scope = $rootScope.$new();
       defaultMaxEntriesShown = 100;
+      defaultMaxNotificationsShown = 3;
       defaultWebsocketEndpoints = ['dummyEndpoint'];
       ctrl = $controller('MainCtrl', {
         $scope: scope,
         '$window': $window,
         'defaultWebsocketEndpoints': defaultWebsocketEndpoints,
-        'defaultMaxEntriesShown': defaultMaxEntriesShown
+        'defaultMaxEntriesShown': defaultMaxEntriesShown,
+        'defaultMaxNotificationsShown': defaultMaxNotificationsShown
       });
     }]));
 
