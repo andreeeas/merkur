@@ -43,7 +43,7 @@ cargo {
 		tomcat { ajpPort = 9091 }
 
 		installer {
-			installUrl  = 'http://apache.mirror.iphh.net/tomcat/tomcat-7/v7.0.42/bin/apache-tomcat-7.0.42.zip'
+			installUrl  = 'http://apache.mirror.iphh.net/tomcat/tomcat-7/v7.0.47/bin/apache-tomcat-7.0.47.zip'
 			downloadDir = file("$buildDir/download")
 			extractDir  = file("$buildDir/extract")
 		}
