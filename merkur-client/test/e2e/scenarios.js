@@ -4,7 +4,7 @@
 
 describe('Merkur Client', function() {
 
-  var websocketEndpoint = 'http://localhost:8080/merkur-server-0.1/socket';
+  var websocketEndpoint = 'http://localhost:9090/merkur-server/socket';
   
   // vor jedem Testfall zur Startseite navigieren
   beforeEach(function () {
@@ -66,19 +66,24 @@ describe('Merkur Client', function() {
     beforeEach(function () {
       select('websocketEndpoint').option(websocketEndpoint);
       element('#connect').click();
+      sleep(1);
     });
     
     describe('No subscriptions to log messages exist', function() {
 
-      // TODO: Fix
-      it('should have a deactivated websocketEndpoint selectbox', function() {
-        expect(element('#websocketEndpoint','Websocket endpoint selectbox').css('display')).toBe('none');
+      it('should display notification for connection', function() {
+        expect(repeater('.row-fluid.notifications li','Notifications').count()).toBe(1);
       });
 
       // TODO: Fix
-      it('should have a deactivated Verbinden button', function() {
-        expect(element('#connect','Verbinden button').css('display')).toBe('none');
-      });
+      // it('should have a deactivated websocketEndpoint selectbox', function() {
+      //   expect(element('#websocketEndpoint','Websocket endpoint selectbox').css('display')).toBe('none');
+      // });
+
+      // TODO: Fix
+      // it('should have a deactivated Verbinden button', function() {
+      //   expect(element('#connect','Verbinden button').css('display')).toBe('none');
+      // });
 
       it('should have an activated subscribe button', function() {
         expect(element('#subscribe','disconnect button').css('display')).toBe('block');
@@ -90,11 +95,37 @@ describe('Merkur Client', function() {
 
     });
 
-    describe('one subscription to log messages exists', function() {
+    describe('subscriptions to log messages exist', function() {
       
-      // TODO: Implementieren
+      beforeEach(function () {
+        input('logMessagesSource').enter('Generator.#');
+        sleep(1);
+        element('#subscribe').click();
+        sleep(2);
+      });
 
-    })
+      it('should display notification for subscription', function() {
+        expect(repeater('.row-fluid.notifications li','Notifications').count()).toBe(2);
+      });
+
+      it('should contain log messages', function() {
+        expect(repeater('.row-fluid.logmessages li','Log messages').count()).toBeGreaterThan(1);
+      });
+
+      it('should contain a subscription in the corresponding select', function() {
+        expect(repeater('.row-fluid.subscriptions select option','Subscriptions').count()).toBe(2);
+      });
+
+      it('should unsubscribe from that subscription when clicking on the corresponding button', function() {
+        select('selectedLogSubscription').option('sub-0');
+        sleep(1);
+        element('#unsubscribe').click();
+        expect(repeater('.row-fluid.subscriptions select option','Subscriptions').count()).toBe(1);
+        // expect 3 as we do the connect, subscribe and unsubscribe step
+        expect(repeater('.row-fluid.notifications li','Notifications').count()).toBe(3);
+      });
+
+    });
 
   });
 
