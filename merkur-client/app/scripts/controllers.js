@@ -96,9 +96,6 @@ angular.module('merkurClientApp.controllers', [])
         'level':'alert-'+level
       };
       $scope.notifications.push(notification);
-      $timeout(function() {
-        $scope.notifications = _.without($scope.notifications,notification);
-      }, 5000);
     };
 
     // Funktion zur Überprüfung auf vorhandene Benachrichtigungen
