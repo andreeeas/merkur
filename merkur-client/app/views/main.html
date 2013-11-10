@@ -29,7 +29,7 @@
       </div>
 
       <!-- Abonnements einsehen und kündigen-->
-      <div class="row-fluid pagination" ng-show="hasLogSubscriptions()">
+      <div class="row-fluid pagination subscriptions" ng-show="hasLogSubscriptions()">
 
         <!-- Einsehen -->
         <select class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
@@ -38,7 +38,7 @@
         </select>
 
         <!-- Kündigen -->
-        <button type="button" class="span2 btn btn-warning" ng-click="unsubscribe(selectedLogSubscription)" tooltip="selectedLogSubscription" data-toggle="tooltip" ng-disabled="selectedLogSubscription === ''">Kündigen</button>
+        <button id="unsubscribe" type="button" class="span2 btn btn-warning" ng-click="unsubscribe(selectedLogSubscription)" tooltip="selectedLogSubscription" data-toggle="tooltip" ng-disabled="selectedLogSubscription === ''">Kündigen</button>
       </div>
 
       <!-- Filter -->
