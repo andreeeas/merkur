@@ -14,6 +14,7 @@ files = [
   'app/bower_components/angular-route/angular-route.js',
   'app/bower_components/jscrollpane/script/jquery.mousewheel.js',
   'app/bower_components/jscrollpane/script/jquery.jscrollpane.js',
+  'app/bower_components/mousetrap/mousetrap.js',
   'app/scripts/*.js',
   'app/scripts/**/*.js',
   'test/lib/**/*.js',
@@ -51,7 +52,7 @@ autoWatch = true;
 // - Safari (only Mac)
 // - PhantomJS
 // - IE (only Windows)
-browsers = ['Chrome','Firefox','Safari'];
+browsers = ['Chrome','Firefox'];
 
 // If browser does not capture in given timeout [ms], kill it
 captureTimeout = 5000;

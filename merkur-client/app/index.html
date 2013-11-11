@@ -31,22 +31,12 @@
     <!-- Add your site or application content here -->
     <div class="container-fluid" ng-view=""></div>
 
-    <!-- Google Analytics: change UA-XXXXX-X to be your site's ID. -->
-    <script>
-      var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
-      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
-      g.src='//www.google-analytics.com/ga.js';
-      s.parentNode.insertBefore(g,s)}(document,'script'));
-    </script>
-
+    <!-- build:js({.tmp,app}) scripts/scripts.js -->
     <script src="bower_components/jquery/jquery.js"></script>
     <script src="bower_components/sockjs/sockjs.js"></script>
-
-    <!-- build:js scripts/plugins.js -->
     <script src="bower_components/underscore/underscore.js"></script>
     <script src="bower_components/jscrollpane/script/jquery.mousewheel.js"></script>
     <script src="bower_components/jscrollpane/script/jquery.jscrollpane.js"></script>
-    <script src="bower_components/mousetrap/mousetrap.js"></script>
     <script src="scripts/lib/stomp.js"></script>
     <script src="scripts/lib/jquery.jfontsize-1.0.js"></script>
     <script src="bower_components/bootstrap-sass/js/bootstrap-affix.js"></script>
@@ -62,28 +52,22 @@
     <script src="bower_components/bootstrap-sass/js/bootstrap-scrollspy.js"></script>
     <script src="bower_components/bootstrap-sass/js/bootstrap-collapse.js"></script>
     <script src="bower_components/bootstrap-sass/js/bootstrap-tab.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js scripts/modules.js -->
     <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/select2/select2.js"></script>
     <script src="bower_components/angular-ui-select2/src/select2.js"></script>
     <script src="bower_components/angular-ui-bootstrap/src/accordion/accordion.js"></script>
     <script src="bower_components/angular-ui-bootstrap/src/collapse/collapse.js"></script>
     <script src="bower_components/angular-ui-bootstrap/src/transition/transition.js"></script>
-    <script src="bower_components/angular-route/angular-route.js"></script>
     <script src="bower_components/angular-resource/angular-resource.js"></script>
     <script src="bower_components/angular-cookies/angular-cookies.js"></script>
     <script src="bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js({.tmp,app}) scripts/scripts.js -->
+    <script src="bower_components/mousetrap/mousetrap.js"></script>
     <script src="scripts/app.js"></script>
     <script src="scripts/controllers.js"></script>
     <script src="scripts/directives.js"></script>
-    <!-- endbuild -->
-
     <script src="scripts/constants.js"></script>
+    <!-- endbuild -->
 
 </body>
 </html>
