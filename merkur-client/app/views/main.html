@@ -39,10 +39,12 @@
 
         <!-- Einsehen -->
         <h3 class="sr-only">Abonnements einsehen</h3>
-        <select class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
-          <option value=""></option>
-          <option ng-repeat="logSubscription in logSubscriptions" ng-value="logSubscription.id">{{logSubscription.source}}</option>
-        </select>
+        <div>
+          <select class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
+            <option value=""></option>
+            <option ng-repeat="logSubscription in logSubscriptions" ng-value="logSubscription.id">{{logSubscription.source}}</option>
+          </select>
+        </div>
 
         <!-- Kündigen -->
         <h3 class="sr-only">Abonnements kündigen</h3>
@@ -77,7 +79,14 @@
 
 
 <!-- Log-Nachrichten -->
-<div class="row-fluid logmessages" ng-show="hasLogMessages()">
+<div class="row-fluid logmessages" ng-show="hasLogMessages()" fontresizeable>
+  <div class="span12">
+    <div class="btn-group font-resizer">
+      <button class="btn" id="font-smaller">A <i class="icon-minus-sign"></i></button>
+      <button class="btn" id="font-default">A</button>
+      <button class="btn" id="font-bigger">A <i class="icon-plus-sign"></i></button>
+    </div>
+  </div>
   <div class="span12" scrollpane>
     <ul class="unstyled">
       <li ng-repeat="logMessage in logMessages track by $index | limitTo:maxEntriesShown">{{logMessage.body}}</li>

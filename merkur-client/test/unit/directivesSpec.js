@@ -56,4 +56,22 @@ describe('Directives', function () {
 
   });
 
+  describe('fontresizeable', function () {
+
+    var fontSize;
+
+    beforeEach(inject(function ($rootScope, $compile) {
+      element = angular.element('<div fontresizeable>Text</div>');
+      scope = $rootScope;
+      $compile(element)(scope);
+      scope.$digest();
+      fontSize = element.css('font-size');
+    }));
+
+    it('should not have an inline-style for font-size when initially set up', function() {
+      expect(element.css('font-size')).toEqual(fontSize);
+    });
+
+  });
+
 });

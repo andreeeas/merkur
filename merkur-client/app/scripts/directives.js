@@ -39,3 +39,19 @@ merkurClientAppDirectives.directive('tooltip',function()
     }
   };
 });
+
+merkurClientAppDirectives.directive('fontresizeable', [function () {
+  return {
+    restrict: 'A',
+    link: function postLink(scope, element) {
+      element.jfontsize({
+        btnMinusClasseId: '#font-smaller',
+        btnDefaultClasseId: '#font-default',
+        btnPlusClasseId: '#font-bigger',
+        btnMinusMaxHits: 5,
+        btnPlusMaxHits: 5,
+        sizeChange: 1
+      });
+    }
+  };
+}]);

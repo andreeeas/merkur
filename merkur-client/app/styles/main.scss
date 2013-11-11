@@ -53,6 +53,16 @@ body {
 
 }
 
+.logmessages {
+  position: relative;
+
+  .font-resizer {
+    position: absolute;
+    right: 25px;
+  }
+
+}
+
 /* jScrollPane */
 
 .jspDrag
