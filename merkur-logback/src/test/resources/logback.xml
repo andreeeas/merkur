@@ -24,6 +24,6 @@
 	</root>
 
 	<logger name="de.materna.cms.merkur" level="debug" />
-	<logger name="org.springframework" level="info" />
+	<logger name="org.springframework" level="warn" />
 
 </configuration>
