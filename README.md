@@ -1,50 +1,34 @@
 # Merkur
 
-Merkur ist ein Message-orientiertes Framework zur Systemanalyse. Als Datenbasis werden Log-Nachrichten von Applikationen genutzt. Die zentralen Aufgaben in Bezug auf diese sind:
+Merkur ist ein Message-orientiertes Framework zur Systemanalyse. Als Datenbasis werden Log-Nachrichten genutzt. Die zentralen Aufgaben in Bezug auf diese sind:
 
 - Aggregierung
 - Visualisierung
 - Filterung
 
-## Voraussetzungen
+## Betrieb
 
-- [Git](http://git-scm.com/)
-- [NodeJS](http://nodejs.org/)
-- [Yeoman](http://yeoman.io/)
-- [Ruby/Rubygem](https://www.ruby-lang.org/de/)
+### Voraussetzungen
 
-## Installation
+- JDK >= 1.6
 
-### Unix
+### Installation
 
-1. Klonen des Frameworks
-2. Installation des Message-Brokers(RabbitMQ)
+#### Unix und OSX
 
-   ```bash
-   ./gradlew merkur-infrastructure:installRabbitmqUnix
-   ```
-
-3. Installation der Detanbank(MongoDB)
+1. Herunterladen des Frameworks bzw. der Datei **dist/merkur.zip**
+2. Entpacken der Datei **dist/merkur.zip** am gewünschten Ort. Das zip-File enthält die notwendigen Komponenten Merkur-Logback, Merkur-Server und Merkur-Client. Für die Installation bitte in die korrespondierende README.md des jeweiligen Moduls schauen.
+3. Installation des Message-Brokers(RabbitMQ) nach der Anleitung unter http://www.rabbitmq.com/download.html. Wer unter OSX [Homebrew](http://http://brew.sh) installiert hat, kann den Message-Broker auch über folgenden Befehl installieren:
 
    ```bash
-   ./gradlew merkur-infrastructure:installMongodbUnix
+   brew install rabbitmq
    ```
 
-### OSX
+**Hinweis**: Die Installation unter Windows ist nicht getestet. Für den Message-Broker wird entweder Unix oder OSX empfohlen.
 
-1. Klonen des Frameworks
+## Entwicklung
 
-2. Installation des Message-Brokers(RabbitMQ)
-
-   ```bash
-   ./gradlew merkur-infrastructure:installRabbitmqOSX
-   ```
-
-3. Installation der Detanbank(MongoDB)
-
-   ```bash
-   ./gradlew merkur-infrastructure:installMongodbOSX
-   ```
+Die Installation für Entwickler wird im jeweiligen Modul genauer beschreiben.
 
 ## Module
 
@@ -64,7 +48,7 @@ Das Logback-Modul stellt einen Logback-Appender bereit, der es ermöglicht, Log-
 
 ### Merkur-Server
 
-Der Server fungiert als Bindeglied zwischen dem Message-Broker und Client. Er stellt einen Websocket-Endpunkt bereit, der den Push-Mechanismus der Log-Nachrichten in Richtung Client ermöglicht.
+Der Server fungiert als Bindeglied zwischen dem Message-Broker und dem Client. Er stellt einen Websocket-Endpunkt bereit, der den Push-Mechanismus der Log-Nachrichten in Richtung Client ermöglicht.
 
 **Aufgabe:** Verbindung des Client mit dem Message-Broker
 
@@ -76,15 +60,10 @@ Der Client stellt eine grafische Oberfläche zur Verfügung. Diese ermöglicht e
 
 ### Merkur-Infrastucture
 
-Das Infrastruktur-Modul stellt Gradle-Tasks zur Installation der vom Framework benötigten Infrastruktur-Komponenten bereit. Darunter fallen u.a. die Installation des Message-Brokers(RabbitMQ) und der Datenbank(MongoDB).
+Das Infrastruktur-Modul stellt Gradle-Tasks zur Installation der vom Framework benötigten Infrastruktur-Komponenten bereit. Aktuell ist dies die Installation des Message-Brokers(RabbitMQ).
 
 **Aufgabe:** Bereitstellung von Gradle-Tasks für die Installation der Infrastruktur
 
 ## Infrastruktur-Komponenten
 
 - [RabbitMQ](http://www.rabbitmq.com/)
-- [MongoDB](http://www.mongodb.org/)
-
-## Bibliotheken
-
-TODO: Ergänzen
