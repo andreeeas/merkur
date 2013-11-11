@@ -25,7 +25,7 @@
         <h3 class="sr-only">Log-Nachrichten abonnieren</h3>
         <div ng-show="connected">
           <span class="span8">
-            <input class="span12" type="text" placeholder="App-ID.Logger.Level" ng-model="logMessagesSource">
+            <input id="source" class="span12" type="text" placeholder="App-ID.Logger.Level" ng-model="logMessagesSource">
           </span>
           <button id="subscribe" type="button" class="span2 btn btn-primary" ng-click="subscribe()" ng-disabled="logMessagesSource === ''">Abonnieren</button>
           <button id="disconnect" type="button" class="span1 btn btn-danger" ng-click="disconnect()" tooltip="websocketEndpoint" data-toggle="tooltip">
@@ -40,7 +40,7 @@
         <!-- Einsehen -->
         <h3 class="sr-only">Abonnements einsehen</h3>
         <div>
-          <select class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
+          <select id="subscriptions" class="span8" ui-select2 ng-model="selectedLogSubscription" data-placeholder="Abonnement">
             <option value=""></option>
             <option ng-repeat="logSubscription in logSubscriptions" ng-value="logSubscription.id">{{logSubscription.source}}</option>
           </select>
@@ -54,7 +54,7 @@
       <!-- Filter -->
       <h3 class="sr-only">Log-Nachrichten filtern</h3>
       <div class="row-fluid pagination" ng-show="hasLogSubscriptions()">
-        <input class="span8" type="text" placeholder="Filter" ng-model="filter">
+        <input id="filter" class="span8" type="text" placeholder="Filter" ng-model="filter">
       </div>
 
     </form>
@@ -62,7 +62,7 @@
 
   <h2 class="sr-only">Hilfe</h2>
   <div class="span2">
-    <button type="button" class="span12 btn pull-right" data-toggle="modal" data-target="#help">
+    <button id="help" type="button" class="span12 btn pull-right" data-toggle="modal" data-target="#helpDialog">
       <i class="icon-question-sign"></i> Hilfe
     </button>
   </div>
@@ -95,7 +95,7 @@
 </div>
 
 <!-- Modaler Hilfe-Dialog -->
-<div class="modal fade" id="help" tabindex="-1" role="dialog" aria-labelledby="help-title" aria-hidden="true">
+<div class="modal fade" id="helpDialog" tabindex="-1" role="dialog" aria-labelledby="help-title" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
@@ -103,49 +103,87 @@
         <h4 class="modal-title" id="help-title">Hilfe</h4>
       </div>
       <div class="modal-body">
-        <ol>
-          <li>
-            <h5>Adresse ausw&auml;hlen</h5>
-            <p>Über die Selectbox Adresse kann der Merkur-Server angegeben werden, der zur Verbindung mit dem Message-Broker genutzt wird. Eine erfolgreiche Verbindung wird mit einer Mitteilung im Meldungbereich bestätigt. Erst nach der Verbindung können Quellen für Log-Nachrichten ausgewählt bzw. abonniert werden.</p>
-          </li>
-          <li>
-            <h5>Quelle auswählen/abonnieren</h5>
-            <p>Im Eingabefeld Quelle können die gewünschten Log-Nachrichten abonniert werden. Es ist gekennzeichnet durch den Platzhalter <strong>App-ID.Logger.Level</strong>. Letzterer beschreibt die drei Einheiten, in die Log-Nachrichten von Merkur kategorisiert werden:</p>
-            <dl>
-              <dt>App-ID</dt>
-              <dd>die ID der loggenden Applikation. Dies kann sowohl ein Servlet-Container als auch eine Standalone-Applikation sein. Per Konvention sollte das Logging eines Preview-Tomcat auf einer VM mit dem Namen gsb-vm mit einer App-ID wie 'gsb-vm_preview-tomcat' oder 'gsb-vm_pt' konfiguriert sein. Analog dazu würde ein Solr-Indexer auf derselben VM die App-ID 'gsb-vm_si' besitzen.</dd>
-              <dt>Logger</dt>
-              <dd>der voll qualifizierte Name der Klasse bzw. des Packages. Sollen alle Log-Nachrichten des Packages 'de.materna.cms' für einen Preview-Tomcat auf der gsb-vm abonniert werden, so wäre die Quelle 'gsb-vm_pt.de.materna.cms.#'</dd>
-              <dt>Level</dt>
-              <dd>das Level der zu abonnierenden Log-Nachrichten(z.B. DEBUG, INFO oder WARN)</dd>
+
+        <accordion>
+          <accordion-group heading="Allgemein">
+            
+            <ol>
+              <li>
+                <h5>Adresse ausw&auml;hlen</h5>
+                <p>Über die Selectbox Adresse kann der Merkur-Server angegeben werden, der zur Verbindung mit dem Message-Broker genutzt wird. Eine erfolgreiche Verbindung wird mit einer Mitteilung im Meldungbereich bestätigt. Erst nach der Verbindung können Quellen für Log-Nachrichten ausgewählt bzw. abonniert werden.</p>
+              </li>
+              <li>
+                <h5>Quelle auswählen/abonnieren</h5>
+                <p>Im Eingabefeld Quelle können die gewünschten Log-Nachrichten abonniert werden. Es ist gekennzeichnet durch den Platzhalter <strong>App-ID.Logger.Level</strong>. Letzterer beschreibt die drei Einheiten, in die Log-Nachrichten von Merkur kategorisiert werden:</p>
+                <dl>
+                  <dt>App-ID</dt>
+                  <dd>die ID der loggenden Applikation. Dies kann sowohl ein Servlet-Container als auch eine Standalone-Applikation sein. Per Konvention sollte das Logging eines Preview-Tomcat auf einer VM mit dem Namen gsb-vm mit einer App-ID wie 'gsb-vm_preview-tomcat' oder 'gsb-vm_pt' konfiguriert sein. Analog dazu würde ein Solr-Indexer auf derselben VM die App-ID 'gsb-vm_si' besitzen.</dd>
+                  <dt>Logger</dt>
+                  <dd>der voll qualifizierte Name der Klasse bzw. des Packages. Sollen alle Log-Nachrichten des Packages 'de.materna.cms' für einen Preview-Tomcat auf der gsb-vm abonniert werden, so wäre die Quelle 'gsb-vm_pt.de.materna.cms.#'</dd>
+                  <dt>Level</dt>
+                  <dd>das Level der zu abonnierenden Log-Nachrichten(z.B. DEBUG, INFO oder WARN)</dd>
+                </dl>
+                <p>
+                  <span class="label label-info">Hinweis</span>
+                  Innerhalb der Quelle haben die Zeichen <code>*</code> und <code>#</code> besondere Bedeutungen. Sie stehen jeweils als Platzhalter für eine bzw. eine oder mehrere durch Punkte getrennte Kategorien. Kategorien sind die App-ID, einzelne Packages und das Level. Beispiele:
+                </p>
+                <dl>
+                  <dt>gsb-vm_pt.de.materna.cms.*</dt>
+                  <dd>Eine Quelle mit 4 konkreten und einer beliebigen Kategorie. Es werden Log-Nachrichten aller Level aller Klassen des Packages de.materna.cms der Applikation mit der ID gsb-vm_pt abonniert.</dd>
+                  <dt>gsb-vm_pt.de.materna.cms.#</dt>
+                  <dd>Eine Quelle mit 4 konkreten und einer oder mehreren beliebigen Kategorien. Es werden Log-Nachrichten aller Level aller Klassen des Packages de.materna.cms <strong>und</strong> aller enthaltenen Packages der Applikation mit der ID gsb-vm_pt abonniert.</dd>
+                  <dt>gsb-vm_pt.de.materna.cms.cae.#.INFO</dt>
+                  <dd>Eine Quelle mit 5 konkreten und einer oder mehreren beliebigen Kategorien. Es werden Log-Nachrichten mit dem Level INFO aller Klassen des Packages de.materna.cms.cae <strong>und</strong> aller enthaltenen Packages der Applikation mit der ID gsb-vm_pt abonniert.</dd>
+                </dl>
+                <p>Ein erfolgreich abgeschlossenes Abo wird mit einer Mitteilung im Meldungsbereich bestätigt.</p>
+              </li>
+              <li>
+                <h5>Log-Nachrichten filtern(optional)</h5>
+                <p>Im Eingabefeld Filter können die abonnierten Log-BNachrichten live gefiltert werden. Der dort eingegebene Begriff wird direkt als Filter auf die ab diesem Zeitpunkt angezeigten Log-Nachrichten angewendet.</p>
+              </li>
+              <li>
+                <h5>Abonnements kündigen</h5>
+                <p>Über die Selectbox Abonnement und den rechts daneben positionierten Button Kündigen kann ein bestehendes Abonnement wieder gekündigt werden. Eine erfolgreiche Kündigung wird mit einer Mitteilung im Meldungsbereich bestätigt.</p>
+              </li>
+              <li>
+                <h5>Verbindung zum Server trennen</h5>
+                <p>Eine Verbindung zum Server wird beim Verlassen der Seite automatisch beendet. Soll während einer Sitzung die Verbindung getrennt werden, so geschieht dies über den roten Button im oberen rechten Bereich.</p>
+              </li>
+            </ol>
+
+          </accordion-group>
+          <accordion-group heading="Tastatur-K&uuml;rzel">
+            <dl class="dl-horizontal">
+              <dt>?</dt>
+              <dd>Hilfe-Dialog &ouml;ffnen</dd>
+              <dt>o c</dt>
+              <dd>Auswahl des Merkur-Servers &ouml;ffnen</dd>
+              <dt>o s</dt>
+              <dd>Auswahl der Abonnements öffnen</dd>
+              <dt>c c</dt>
+              <dd>Verbindungen-Button klicken</dd>
+              <dt>c d</dt>
+              <dd>Trennen-Button klicken</dd>
+              <dt>c s</dt>
+              <dd>Abonnieren-Button klicken</dd>
+              <dt>c u</dt>
+              <dd>Kündigen-Button klicken</dd>
+              <dt>-</dt>
+              <dd>Schrift in Ausgabebereich verkleinern</dd>
+              <dt>+</dt>
+              <dd>Schrift in Ausgabebereich vergr&ouml;&szlig;ern</dd>
+              <dt>c 0</dt>
+              <dd>Schrift in Ausgabebereich auf Standardgr&ouml;&szlig;e zur&uuml;cksetzen</dd>
+              <dt>g s</dt>
+              <dd>Quelle-Feld fokussieren</dd>
+              <dt>g f</dt>
+              <dd>Filter-Feld fokussieren</dd>
+              <dt>Strg+l</dt>
+              <dd>Ausgabebereich l&ouml;schen</dd>
             </dl>
-            <p>
-              <span class="label label-info">Hinweis</span>
-              Innerhalb der Quelle haben die Zeichen <code>*</code> und <code>#</code> besondere Bedeutungen. Sie stehen jeweils als Platzhalter für eine bzw. eine oder mehrere durch Punkte getrennte Kategorien. Kategorien sind die App-ID, einzelne Packages und das Level. Beispiele:
-            </p>
-            <dl>
-              <dt>gsb-vm_pt.de.materna.cms.*</dt>
-              <dd>Eine Quelle mit 4 konkreten und einer beliebigen Kategorie. Es werden Log-Nachrichten aller Level aller Klassen des Packages de.materna.cms der Applikation mit der ID gsb-vm_pt abonniert.</dd>
-              <dt>gsb-vm_pt.de.materna.cms.#</dt>
-              <dd>Eine Quelle mit 4 konkreten und einer oder mehreren beliebigen Kategorien. Es werden Log-Nachrichten aller Level aller Klassen des Packages de.materna.cms <strong>und</strong> aller enthaltenen Packages der Applikation mit der ID gsb-vm_pt abonniert.</dd>
-              <dt>gsb-vm_pt.de.materna.cms.cae.#.INFO</dt>
-              <dd>Eine Quelle mit 5 konkreten und einer oder mehreren beliebigen Kategorien. Es werden Log-Nachrichten mit dem Level INFO aller Klassen des Packages de.materna.cms.cae <strong>und</strong> aller enthaltenen Packages der Applikation mit der ID gsb-vm_pt abonniert.</dd>
-            </dl>
-            <p>Ein erfolgreich abgeschlossenes Abo wird mit einer Mitteilung im Meldungsbereich bestätigt.</p>
-          </li>
-          <li>
-            <h5>Log-Nachrichten filtern(optional)</h5>
-            <p>Im Eingabefeld Filter können die abonnierten Log-BNachrichten live gefiltert werden. Der dort eingegebene Begriff wird direkt als Filter auf die ab diesem Zeitpunkt angezeigten Log-Nachrichten angewendet.</p>
-          </li>
-          <li>
-            <h5>Abonnements kündigen</h5>
-            <p>Über die Selectbox Abonnement und den rechts daneben positionierten Button Kündigen kann ein bestehendes Abonnement wieder gekündigt werden. Eine erfolgreiche Kündigung wird mit einer Mitteilung im Meldungsbereich bestätigt.</p>
-          </li>
-          <li>
-            <h5>Verbindung zum Server trennen</h5>
-            <p>Eine Verbindung zum Server wird beim Verlassen der Seite automatisch beendet. Soll während einer Sitzung die Verbindung getrennt werden, so geschieht dies über den roten Button im oberen rechten Bereich.</p>
-          </li>
-        </ol>
+          </accordion-group>
+        </accordion>
+
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>

@@ -21,11 +21,18 @@ angular.module('merkurClientApp.controllers', [])
     $scope.maxEntriesShown = defaultMaxEntriesShown;
     $scope.maxNotificationsShown = defaultMaxNotificationsShown;
 
+    /*
+     * Funktionen
+     *
+     * Bestehend aus Hilfsfunktionen und solchen Funktionen, 
+     * die dem Scope zur Interaktion mit der GUI zugeorndet sind.
+     */
+
     var digest = _.throttle(function() {
       $scope.$digest();
     }, 1000);
 
-    // Funktion zur Verbindung zum Websocket-Server
+    // Verbindung zum Websocket-Server
     $scope.connect = function() {
       socket = new SockJS($scope.websocketEndpoint);
       client = Stomp.over(socket);
@@ -42,7 +49,7 @@ angular.module('merkurClientApp.controllers', [])
       });
     };
 
-    // Funktion zur Trennung der Verbindung mit dem Websocket-Server
+    // Trennung der Verbindung mit dem Websocket-Server
     $scope.disconnect = function() {
       client.disconnect(function() {
         _.each($scope.logSubscriptions, function(logSubscription) {
@@ -53,7 +60,7 @@ angular.module('merkurClientApp.controllers', [])
       });
     };
 
-    // Funktion zum Abschließen eines Abonnements
+    // Abschließen eines Abonnements
     $scope.subscribe = function () {
       // Abonnieren
       var logSubscriptionId = client.subscribe('/topic/'+$scope.logMessagesSource, function(message) {
@@ -73,7 +80,7 @@ angular.module('merkurClientApp.controllers', [])
       $scope.logMessagesSource = '';
     };
 
-    // Funktion zum abmelden eines Abonnements
+    // Kündigen eines Abonnements
     $scope.unsubscribe = function () {
       doUnsubsribe($scope.selectedLogSubscription);
     };
@@ -86,11 +93,22 @@ angular.module('merkurClientApp.controllers', [])
       addNotification('Abonnement mit Id "'+logSubscription+'" entfernt','info');
     };
 
-    // Funktion zur Überprüfung auf vorhandene Abonnements
+    // Überprüfung auf vorhandene Abonnements
     $scope.hasLogSubscriptions = function () {
       return $scope.logSubscriptions.length > 0;
     };
 
+    // Überprüfung auf vorhandene Benachrichtigungen
+    $scope.hasNotifications = function () {
+      return $scope.notifications.length > 0;
+    };
+
+    // Überprüfung auf vorhandene Log-Nachrichten
+    $scope.hasLogMessages = function () {
+      return $scope.logMessages.length > 0;
+    };
+
+    // Hilfsfunktion zum Hinzufügen einer Benachrichtigung
     var addNotification = function(message, level) {
       var notification = {
         'message':message,
@@ -102,14 +120,87 @@ angular.module('merkurClientApp.controllers', [])
       }
     };
 
-    // Funktion zur Überprüfung auf vorhandene Benachrichtigungen
-    $scope.hasNotifications = function () {
-      return $scope.notifications.length > 0;
-    };
+    /*
+     * Keyboard-Shortcuts
+     * 
+     * Diese dienen hauptsächlich der besseren Usability bzw. der erhöhten Arbeitsgeschwindigkeit
+     */
 
-    // Funktion zur Überprüfung auf vorhandene Log-Nachrichten
-    $scope.hasLogMessages = function () {
-      return $scope.logMessages.length > 0;
-    };
+    // Hilfe-Dialog öffnen
+    Mousetrap.bind('?', function() {
+      angular.element('#help').click();
+    });
+
+    // Auswahl des Websocket-Endpunkts öffnen
+    Mousetrap.bind('o c', function() {
+      angular.element('#websocketEndpoint').select2('open');
+      return false;
+    });
+
+    // Auswahl der Abonnements öffnen
+    Mousetrap.bind('o s', function() {
+      angular.element('#subscriptions').select2('open');
+      return false;
+    });
+
+    // Verbindungs-Button klicken
+    Mousetrap.bind('c c', function() {
+      angular.element('#connect').click();
+      return false;
+    });
+
+    // Trennen-Button klicken
+    Mousetrap.bind('c d', function() {
+      angular.element('#disconnect').click();
+      return false;
+    });
+
+    // Abonnieren-Button klicken
+    Mousetrap.bind('c s', function() {
+      angular.element('#subscribe').click();
+      return false;
+    });
+
+    // Kündigen-Button klicken
+    Mousetrap.bind('c u', function() {
+      angular.element('#unsubscribe').click();
+      return false;
+    });
+
+    // Schrift verkleinern klicken
+    Mousetrap.bind('-', function() {
+      angular.element('#font-smaller').click();
+      return false;
+    });
+
+    // Schrift vergrößern klicken
+    Mousetrap.bind('+', function() {
+      angular.element('#font-bigger').click();
+      return false;
+    });
+
+    // Schrift auf Standardgröße setzen
+    Mousetrap.bind('c 0', function() {
+      angular.element('#font-default').click();
+      return false;
+    });
+
+    // Quelle-Feld fokussieren
+    Mousetrap.bind('g s', function() {
+      angular.element('#source').focus();
+      return false;
+    });
+
+    // Filter-Feld fokussieren
+    Mousetrap.bind('g f', function() {
+      angular.element('#filter').focus();
+      return false;
+    });
+
+    // Log-Nachrichten löschen
+    Mousetrap.bind('ctrl+l', function() {
+      $scope.logMessages = [];
+      return false;
+    });
 
   }]);
