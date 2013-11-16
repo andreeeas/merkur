@@ -52,7 +52,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy;
 import ch.qos.logback.classic.spi.StackTraceElementProxy;
 import ch.qos.logback.core.AppenderBase;
 import ch.qos.logback.core.Layout;
-import encoder.RoutingKeyPatternLayoutEncoder;
+import de.materna.cms.merkur.logback.encoder.RoutingKeyPatternLayoutEncoder;
 
 /**
  * Logback-Version des {@link AmqpAppender}, deren Implementierung auf dieser <a

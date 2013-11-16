@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package encoder;
+package de.materna.cms.merkur.logback.encoder;
 
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.pattern.EnsureExceptionHandling;
