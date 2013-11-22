@@ -9,13 +9,11 @@
 
 	<appender name="amqp"
 		class="de.materna.cms.merkur.logback.LogbackAmqpAppender">
-		<encoder>
-			<pattern>%d [%t] %-5p %c{1.} - %m%n</pattern>
-		</encoder>
 		<param name="exchangeName" value="amq.topic" />
 		<param name="charset" value="UTF-8" />
 		<param name="applicationId" value="LogbackAmqpAppenderTest" />
 		<param name="routingKeyPattern" value="%X{applicationId}.%c.%p" />
+		<param name="logMessagesPattern" value="%m" />
 		<param name="generateId" value="true" />
 	</appender>
 
