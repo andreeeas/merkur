@@ -98,6 +98,16 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 	 * Encoder to use to generate routing key.
 	 */
 	private PatternLayoutEncoder routingKeyEncoder = encoderForRoutingKeyPattern();
+	
+	/**
+	 * Pattern format to use for log messages.
+	 */
+	private String logMessagesPattern = "%d [%t] %-5p %c{1.} - %m%n";
+
+	/**
+	 * Encoder to use for log messages.
+	 */
+	private PatternLayoutEncoder logMessagesEncoder = logMessagesEncoder();
 
 	/**
 	 * Used to synchronize access to pattern layouts.
@@ -276,6 +286,19 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 
 	public Layout<ILoggingEvent> getRoutingKeyLayout() {
 		return routingKeyEncoder.getLayout();
+	}
+	
+	public String getLogMessagesPattern() {
+		return logMessagesPattern;
+	}
+
+	public void setLogMessagesPattern(String logMessagesPattern) {
+		this.logMessagesPattern = logMessagesPattern;
+		this.logMessagesEncoder = logMessagesEncoder();
+	}
+
+	public Layout<ILoggingEvent> getLogMessagesLayout() {
+		return logMessagesEncoder.getLayout();
 	}
 
 	public boolean isDeclareExchange() {
@@ -516,8 +539,9 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 			// Nachricht zusammenbauen
 			StringBuilder msgBody;
 			String routingKey;
+			final String formattedMessage = getLogMessagesLayout().doLayout(logEvent);
 			synchronized (layoutMutex) {
-				msgBody = new StringBuilder(logEvent.getFormattedMessage());
+				msgBody = new StringBuilder(formattedMessage);
 				routingKey = getRoutingKeyLayout().doLayout(logEvent);
 			}
 			if (null != logEvent.getThrowableProxy()) {
@@ -554,7 +578,7 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 					}, (long) (Math.pow(retries, Math.log(retries)) * 1000));
 				} else {
 					final String errorMessage = "Could not send log message "
-							+ logEvent.getFormattedMessage() + " after "
+							+ formattedMessage + " after "
 							+ maxSenderRetries + " retries";
 					addError(errorMessage, e);
 				}
@@ -657,6 +681,14 @@ public class LogbackAmqpAppender extends AppenderBase<ILoggingEvent> {
 		public int incrementRetries() {
 			return retries.incrementAndGet();
 		}
+	}
+	
+	private PatternLayoutEncoder logMessagesEncoder() {
+		final PatternLayoutEncoder patternLayoutEncoder = new PatternLayoutEncoder();
+		patternLayoutEncoder.setPattern(logMessagesPattern);
+		patternLayoutEncoder.setContext(getContext());
+		patternLayoutEncoder.start();
+		return patternLayoutEncoder;
 	}
 
 	private PatternLayoutEncoder encoderForRoutingKeyPattern() {

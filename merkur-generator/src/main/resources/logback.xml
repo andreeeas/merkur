@@ -3,7 +3,6 @@
 
 	<property name="CONSOLE_LOG_PATTERN"
 		value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID:- }){magenta} %clr(---){faint} %clr([%15.15t{14}]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wex" />
-	<property name="AMQP_LOG_PATTERN" value="%d [%t] %-5p %c{1.} - %m%n" />
 
 	<conversionRule conversionWord="clr"
 		converterClass="org.springframework.boot.logging.logback.ColorConverter" />
@@ -18,13 +17,11 @@
 
 	<appender name="amqp"
 		class="de.materna.cms.merkur.logback.LogbackAmqpAppender">
-		<encoder>
-			<pattern>${AMQP_LOG_PATTERN}</pattern>
-		</encoder>
 		<param name="exchangeName" value="amq.topic" />
 		<param name="charset" value="UTF-8" />
 		<param name="applicationId" value="Generator" />
 		<param name="routingKeyPattern" value="%X{applicationId}.%c.%p" />
+		<param name="logMessagesPattern" value="%d [%t] %-5p %c{1.} - %m%n" />
 		<param name="generateId" value="true" />
 	</appender>
 
