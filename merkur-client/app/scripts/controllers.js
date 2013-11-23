@@ -30,7 +30,7 @@ angular.module('merkurClientApp.controllers', [])
 
     var digest = _.throttle(function() {
       $scope.$digest();
-    }, 1000);
+    }, 100);
 
     // Verbindung zum Websocket-Server
     $scope.connect = function() {
