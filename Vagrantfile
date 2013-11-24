@@ -15,5 +15,11 @@ Vagrant.configure("2") do |config|
     mcvm1.vm.network "private_network", ip: "192.168.50.191"
     mcvm1.vm.provision :shell, :path => "bootstrap-client.sh"
   end
+
+  config.vm.define "merkur-client-2-vm" do |mcvm2|
+    mcvm2.vm.hostname = "merkur-client-2-vm"
+    mcvm2.vm.network "private_network", ip: "192.168.50.192"
+    mcvm2.vm.provision :shell, :path => "bootstrap-client.sh"
+  end
   
 end
