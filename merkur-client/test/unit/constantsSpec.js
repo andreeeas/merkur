@@ -9,8 +9,7 @@ describe('Constants', function () {
 
     it('should return the serverWebsocketEndpoint', inject(['defaultWebsocketEndpoints',function (defaultWebsocketEndpoints) {
       expect(defaultWebsocketEndpoints).toEqual([
-        {name:'Tomcat 7',url:'http://localhost:9090/merkur-server/socket'},
-        {name:'Tomcat 8',url:'http://localhost:8080/merkur-server-0.1/socket'}
+        {name:'Showcase-Server',url:'http://localhost:8080/merkur-server-0.1/socket'}
       ]);
     }]));
 

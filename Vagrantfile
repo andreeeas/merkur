@@ -6,6 +6,7 @@ Vagrant.configure("2") do |config|
     msvm.vm.network "private_network", ip: "192.168.50.190"
     msvm.vm.network :forwarded_port, host:7777, guest:80
     msvm.vm.network :forwarded_port, host:8888, guest:15672
+    msvm.vm.network :forwarded_port, host:8080, guest:8080
     msvm.vm.provision :shell, :path => "bootstrap-server.sh"
   end
 

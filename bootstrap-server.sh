@@ -42,7 +42,8 @@ echo "Deploye Merkur-Client Webapplikation"
 unzip -d /home/vagrant/ merkur.zip merkur-client.zip
 cd /home/vagrant
 unzip merkur-client.zip
+rm merkur-client.zip
 rm -rf /var/www
-ln -fs dist /var/www
+ln -fs /home/vagrant/dist /var/www
 
 echo "Fertig!"
