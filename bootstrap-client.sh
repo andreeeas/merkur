@@ -31,7 +31,7 @@ chown -R vagrant:vagrant merkur-gen*
 
 sed -e '/exit 0/d' -i /etc/rc.local
 cat >> /etc/rc.local <<EOF
-su - vagrant -c "/home/vagrant/merkur-gena/bin/merkur-generator --id=gena --delay=500 &"
-su - vagrant -c "/home/vagrant/merkur-genb/bin/merkur-generator --id=genb --delay=500 &"
+su - vagrant -c "/home/vagrant/merkur-gena/bin/merkur-generator --id="${HOSTNAME}.gena" --delay=500 &"
+su - vagrant -c "/home/vagrant/merkur-genb/bin/merkur-generator --id="${HOSTNAME}.genb" --delay=500 &"
 exit 0
 EOF
