@@ -67,3 +67,29 @@ Das Infrastruktur-Modul stellt Gradle-Tasks zur Installation der vom Framework b
 ## Infrastruktur-Komponenten
 
 - [RabbitMQ](http://www.rabbitmq.com/)
+
+## Beispiel-VM
+
+Um Merkur mit minimalem Aufwand testen zu können, werden zwei Beispiel-VMs mitgeliefert.
+
+### merkur-server-vm
+
+Beherbergt [RabbitMQ](http://localhost:8888) und die Module Server und [Client](http://localhost:7777).
+
+### merkur-client-1-vm
+
+Startet zweimal das Modul Generator. Die jweiligen vollständigen Quellen der Log-Nachrichten sehen wie folgt aus:
+
+- merkur-client-1-vm.gen1.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-1-vm.gen2.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+
+### merkur-client-2-vm
+
+Startet zweimal das Modul Generator. Die jeweiligen vollständigen Quellen der Log-Nachrichten sehen wie folgt aus:
+
+- merkur-client-2-vm.gen1.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-2-vm.gen2.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+
+Die Schritte zur Inbetriebnahme sind wie folgt:
+
+1. Vagrant [installieren](http://docs.vagrantup.com/v2/installation/index.html)
