@@ -80,16 +80,26 @@ Beherbergt [RabbitMQ](http://localhost:8888) und die Module Server und [Client](
 
 Startet zweimal das Modul Generator. Die jweiligen vollständigen Quellen der Log-Nachrichten sehen wie folgt aus:
 
-- merkur-client-1-vm.gen1.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
-- merkur-client-1-vm.gen2.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-1-vm.gena.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-1-vm.gena.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
 
 ### merkur-client-2-vm
 
 Startet zweimal das Modul Generator. Die jeweiligen vollständigen Quellen der Log-Nachrichten sehen wie folgt aus:
 
-- merkur-client-2-vm.gen1.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
-- merkur-client-2-vm.gen2.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-2-vm.gena.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
+- merkur-client-2-vm.genb.de.materna.cms.merkur.generator.log.LogGenerator.DEBUG
 
 Die Schritte zur Inbetriebnahme sind wie folgt:
 
 1. Vagrant [installieren](http://docs.vagrantup.com/v2/installation/index.html)
+```bash
+   2. cd merkur-infrastructure
+   # VMs registrieren
+   3. vagrant box add merkur-server-vm merkur-server-vm.box
+   4. vagrant box add merkur-client-1-vm merkur-client-1-vm.box
+   5. vagrant box add merkur-client-2-vm merkur-client-2-vm.box
+   # VMs starten
+   6. vagrant up
+   ```
+7. [Client](http://localhost:7777) aufrufen und ? für Hilfe drücken

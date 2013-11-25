@@ -49,3 +49,4 @@ local.properties
 #####################################################
 # Vagrant
 .vagrant
+*.box
