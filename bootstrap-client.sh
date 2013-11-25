@@ -3,7 +3,7 @@
 apt-get update
 
 # Allgemeine Pakete installieren
-apt-get install -y unzip vim
+apt-get install -y unzip vim git
 
 # Java installieren
 apt-get install -y openjdk-7-jdk openjdk-7-source openjdk-7-demo openjdk-7-doc openjdk-7-jre-headless openjdk-7-jre-lib 
