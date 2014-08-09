@@ -92,14 +92,15 @@ Startet zweimal das Modul Generator. Die jeweiligen vollständigen Quellen der L
 
 Die Schritte zur Inbetriebnahme sind wie folgt:
 
-1. Vagrant [installieren](http://docs.vagrantup.com/v2/installation/index.html)
+1. Vagrant [installieren](http://docs.vagrantup.com/v2/installation/index.html)(getetstet mit Version 1.3.5)
+2. Virtualbox [installieren](https://www.virtualbox.org/wiki/Downloads)(getestet mit Version 4.2.16)
 ```bash
-   2. cd merkur-infrastructure
+   3. cd merkur-infrastructure
    # VMs registrieren
-   3. vagrant box add merkur-server-vm merkur-server-vm.box
-   4. vagrant box add merkur-client-1-vm merkur-client-1-vm.box
-   5. vagrant box add merkur-client-2-vm merkur-client-2-vm.box
+   4. vagrant box add merkur-server-vm merkur-server-vm.box
+   5. vagrant box add merkur-client-1-vm merkur-client-1-vm.box
+   6. vagrant box add merkur-client-2-vm merkur-client-2-vm.box
    # VMs starten
-   6. vagrant up
+   7. vagrant up
    ```
-7. [Client](http://localhost:7777) aufrufen und ? für Hilfe drücken
+8. [Client](http://localhost:7777) aufrufen und ? für Hilfe drücken
